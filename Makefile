@@ -1,4 +1,4 @@
-.PHONY: install up down ingest eval test test-all serve
+.PHONY: install up down ingest eval test test-all serve build logs ingest-docker
 
 install:
 	poetry install
@@ -23,3 +23,12 @@ test-all:
 
 serve:
 	poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000
+
+build:
+	docker compose build
+
+logs:
+	docker compose logs -f api
+
+ingest-docker:
+	docker compose run --rm api python -m rag.ingest

@@ -22,5 +22,26 @@ services:
     volumes:
       - qdrant_storage:/qdrant/storage
 
+  api:
+    build: .
+    container_name: japanlife-api
+    env_file: .env
+    environment:
+      - ES_URL=http://elasticsearch:9200
+      - QDRANT_URL=http://qdrant:6333
+      - CHECKPOINT_DB=/app/data/japanlife.db
+    ports:
+      - "8000:8000"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+    volumes:
+      - hf_cache:/root/.cache/huggingface
+      - api_data:/app/data
+
 volumes:
   qdrant_storage:
+  hf_cache:
+  api_data:
