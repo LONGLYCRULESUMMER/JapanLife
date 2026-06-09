@@ -5,7 +5,7 @@ import logging
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import AIMessageChunk, HumanMessage, ToolMessage
 from sse_starlette.sse import EventSourceResponse
 
 from agents.output import extract_citations, extract_reply
@@ -15,6 +15,16 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 _RECURSION_LIMIT = 50
+_SPECIALISTS = {"tax", "visa", "ward_office"}
+
+
+def _domain_from_namespace(namespace) -> str | None:
+    """A specialist subgraph streams under a namespace like ('tax:<uuid>',)."""
+    for part in namespace or ():
+        name = part.split(":", 1)[0]
+        if name in _SPECIALISTS:
+            return name
+    return None
 
 
 def get_graph(request: Request):
@@ -94,22 +104,39 @@ def search(q: str, domain: str = "", top_k: int = 5, retriever=Depends(get_retri
 def chat_stream(req: ChatRequest, graph=Depends(get_graph)):
     thread_id = req.thread_id or str(uuid.uuid4())
 
+    def _sse(event: str, payload: dict) -> dict:
+        return {"event": event, "data": json.dumps(payload, ensure_ascii=False)}
+
     def event_gen():
+        tool_messages: list = []
+        route_sent: str | None = None
         try:
-            for update in graph.stream(
+            for namespace, (chunk, _meta) in graph.stream(
                 _initial_state(req.message),
                 config={"configurable": {"thread_id": thread_id}, "recursion_limit": _RECURSION_LIMIT},
-                stream_mode="updates",
+                stream_mode="messages",
+                subgraphs=True,
             ):
-                for node, payload in update.items():
-                    msgs = payload.get("messages", []) if isinstance(payload, dict) else []
-                    text = extract_reply(msgs)
-                    data = {"node": node, "delta": text, "route": payload.get("active_domain") if isinstance(payload, dict) else None}
-                    yield {"event": "update", "data": json.dumps(data, ensure_ascii=False)}
+                domain = _domain_from_namespace(namespace)
+                if domain and domain != route_sent:
+                    route_sent = domain
+                    yield _sse("route", {"route": domain})
+
+                if isinstance(chunk, ToolMessage):
+                    tool_messages.append(chunk)
+                    # A tool ran, so any text streamed before it was a preamble: tell the
+                    # client to reset the in-progress answer and surface the tool step.
+                    yield _sse("tool", {"name": getattr(chunk, "name", "") or "tool"})
+                    continue
+
+                if domain and isinstance(chunk, AIMessageChunk):
+                    text = chunk.content if isinstance(chunk.content, str) else ""
+                    if text:
+                        yield _sse("token", {"text": text})
         except Exception:
             logger.exception("Chat stream failed for thread %s", thread_id)
-            yield {"event": "error", "data": json.dumps({"error": "The assistant stream failed."}, ensure_ascii=False)}
+            yield _sse("error", {"error": "The assistant stream failed."})
             return
-        yield {"event": "done", "data": json.dumps({"thread_id": thread_id}, ensure_ascii=False)}
+        yield _sse("done", {"thread_id": thread_id, "citations": extract_citations(tool_messages)})
 
     return EventSourceResponse(event_gen())

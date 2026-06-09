@@ -26,15 +26,6 @@ def api_health() -> dict | None:
         return None
 
 
-def post_chat(message: str, thread_id: str | None) -> dict:
-    payload = {"message": message}
-    if thread_id:
-        payload["thread_id"] = thread_id
-    r = httpx.post(f"{API_URL}/chat", json=payload, timeout=120)
-    r.raise_for_status()
-    return r.json()
-
-
 def get_search(query: str, domain: str, top_k: int) -> dict:
     params = {"q": query, "top_k": top_k}
     if domain:
@@ -42,6 +33,23 @@ def get_search(query: str, domain: str, top_k: int) -> dict:
     r = httpx.get(f"{API_URL}/search", params=params, timeout=60)
     r.raise_for_status()
     return r.json()
+
+
+def stream_chat_events(message: str, thread_id: str | None):
+    """Yield (event, data) tuples from the backend SSE /chat/stream endpoint."""
+    payload = {"message": message}
+    if thread_id:
+        payload["thread_id"] = thread_id
+    with httpx.stream("POST", f"{API_URL}/chat/stream", json=payload, timeout=None) as r:
+        r.raise_for_status()
+        event = None
+        for line in r.iter_lines():
+            if not line or line.startswith(":"):  # blank or keep-alive ping
+                continue
+            if line.startswith("event:"):
+                event = line[len("event:"):].strip()
+            elif line.startswith("data:"):
+                yield event, json.loads(line[len("data:"):].strip())
 
 
 RETRIEVAL_DOT = """
@@ -186,26 +194,52 @@ with chat_tab:
         with st.chat_message("user"):
             st.markdown(prompt)
         with st.chat_message("assistant"):
-            with st.spinner("Routing to a specialist and searching the knowledge base…"):
-                try:
-                    data = post_chat(prompt, st.session_state.thread_id)
-                    st.session_state.thread_id = data.get("thread_id")
-                    route = data.get("route")
-                    if route:
-                        st.caption(f"{DOMAIN_EMOJI.get(route, '🤖')} routed to **{route}**")
-                    st.markdown(data.get("reply", ""))
-                    citations = data.get("citations") or []
-                    if citations:
-                        with st.expander(f"Sources ({len(citations)})"):
-                            for cite in citations:
-                                st.markdown(f"- {cite}")
-                    st.session_state.messages.append(
-                        {"role": "assistant", "content": data.get("reply", ""), "route": route, "citations": citations}
-                    )
-                except httpx.HTTPStatusError as exc:
-                    st.error(f"Backend returned {exc.response.status_code}. Is `DEEPSEEK_API_KEY` set and the stack ingested?")
-                except Exception as exc:
-                    st.error(f"Could not reach the backend at {API_URL}: {exc}")
+            status_box = st.empty()
+            answer_box = st.empty()
+            answer = ""
+            route = None
+            tools_used: list[str] = []
+            citations: list[str] = []
+
+            def render_status():
+                bits = []
+                if route:
+                    bits.append(f"{DOMAIN_EMOJI.get(route, '🤖')} routed to **{route}**")
+                if tools_used:
+                    bits.append("🔧 " + ", ".join(dict.fromkeys(tools_used)))
+                if bits:
+                    status_box.caption(" · ".join(bits))
+
+            try:
+                for event, data in stream_chat_events(prompt, st.session_state.thread_id):
+                    if event == "route":
+                        route = data.get("route")
+                        render_status()
+                    elif event == "tool":
+                        tools_used.append(data.get("name", "tool"))
+                        answer = ""  # text before a tool call was a preamble — reset
+                        answer_box.empty()
+                        render_status()
+                    elif event == "token":
+                        answer += data.get("text", "")
+                        answer_box.markdown(answer + " ▌")
+                    elif event == "error":
+                        answer_box.error("The assistant stream failed. Is the stack up and the key set?")
+                    elif event == "done":
+                        st.session_state.thread_id = data.get("thread_id", st.session_state.thread_id)
+                        citations = data.get("citations") or []
+                answer_box.markdown(answer)
+                if citations:
+                    with st.expander(f"Sources ({len(citations)})"):
+                        for cite in citations:
+                            st.markdown(f"- {cite}")
+                st.session_state.messages.append(
+                    {"role": "assistant", "content": answer, "route": route, "citations": citations}
+                )
+            except httpx.HTTPStatusError as exc:
+                st.error(f"Backend returned {exc.response.status_code}. Is `DEEPSEEK_API_KEY` set and the stack ingested?")
+            except Exception as exc:
+                st.error(f"Could not reach the backend at {API_URL}: {exc}")
 
 with retrieval_tab:
     st.header("🔎 Hybrid retrieval inspector")
