@@ -1,4 +1,4 @@
-.PHONY: install up down ingest eval test test-all serve build logs ingest-docker
+.PHONY: install up down ingest eval test test-all serve build logs ingest-docker demo
 
 install:
 	poetry install
@@ -32,3 +32,6 @@ logs:
 
 ingest-docker:
 	docker compose run --rm api python -m rag.ingest
+
+demo:
+	poetry run streamlit run streamlit_app.py
