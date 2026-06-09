@@ -52,6 +52,26 @@ def stream_chat_events(message: str, thread_id: str | None):
                 yield event, json.loads(line[len("data:"):].strip())
 
 
+def list_conversations() -> list[dict]:
+    try:
+        return httpx.get(f"{API_URL}/conversations", timeout=15).json().get("conversations", [])
+    except Exception:
+        return []
+
+
+def load_conversation(thread_id: str) -> list[dict]:
+    r = httpx.get(f"{API_URL}/conversations/{thread_id}", timeout=30)
+    r.raise_for_status()
+    return r.json().get("messages", [])
+
+
+def delete_conversation(thread_id: str) -> None:
+    try:
+        httpx.delete(f"{API_URL}/conversations/{thread_id}", timeout=15)
+    except Exception:
+        pass
+
+
 RETRIEVAL_DOT = """
 digraph {
   rankdir=LR; bgcolor="transparent"; node [shape=box, style="rounded,filled", fillcolor="#eef3fb", fontname="Helvetica"];
@@ -103,6 +123,9 @@ DOMAIN_EMOJI = {"tax": "🧾", "visa": "🛂", "ward_office": "🏛️"}
 
 
 # --------------------------------------------------------------------------- sidebar
+st.session_state.setdefault("messages", [])
+st.session_state.setdefault("thread_id", None)
+
 with st.sidebar:
     st.title("🗾 JapanLife")
     st.caption("Multi-agent assistant for foreigners living in Japan")
@@ -116,6 +139,43 @@ with st.sidebar:
             f"- ElasticSearch: {'🟢' if health.get('elasticsearch') else '🔴'}\n"
             f"- Qdrant: {'🟢' if health.get('qdrant') else '🔴'}"
         )
+
+    st.divider()
+    hist_header = st.columns([4, 1])
+    hist_header[0].subheader("🕑 History")
+    if hist_header[1].button("↻", help="Refresh history"):
+        st.session_state.pop("conversations_cache", None)
+    if st.button("➕ New chat", use_container_width=True):
+        st.session_state.messages = []
+        st.session_state.thread_id = None
+        st.session_state.pop("conversations_cache", None)
+        st.rerun()
+
+    if "conversations_cache" not in st.session_state:
+        st.session_state.conversations_cache = list_conversations() if health else []
+    conversations = st.session_state.conversations_cache
+    if not conversations:
+        st.caption("No past conversations yet." if health else "Connect the backend to see history.")
+    for conv in conversations:
+        tid = conv["thread_id"]
+        is_current = tid == st.session_state.thread_id
+        row = st.columns([5, 1])
+        label = ("▶ " if is_current else "") + (conv.get("title") or "(untitled)")
+        if row[0].button(label, key=f"open_{tid}", use_container_width=True, help=f"{conv.get('turns', 0)} turn(s)"):
+            try:
+                st.session_state.messages = load_conversation(tid)
+                st.session_state.thread_id = tid
+                st.rerun()
+            except Exception as exc:
+                st.error(f"Could not load conversation: {exc}")
+        if row[1].button("🗑", key=f"del_{tid}", help="Delete"):
+            delete_conversation(tid)
+            st.session_state.pop("conversations_cache", None)
+            if st.session_state.thread_id == tid:
+                st.session_state.messages = []
+                st.session_state.thread_id = None
+            st.rerun()
+
     st.divider()
     st.caption("Tech: LangGraph · LangChain · DeepSeek · ElasticSearch · Qdrant · FastAPI · Docker")
     st.caption(f"API: {API_URL}")
@@ -167,16 +227,6 @@ with chat_tab:
     if health is None:
         st.warning("Backend is unreachable — start it with `make up` / `make serve`.")
     st.caption("Try: *When is the tax filing deadline?* · *転入届はいつまでに出す必要がありますか？* · *How many years for permanent residency?*")
-
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
-    if "thread_id" not in st.session_state:
-        st.session_state.thread_id = None
-
-    cols = st.columns([1, 5])
-    if cols[0].button("🧹 New chat"):
-        st.session_state.messages = []
-        st.session_state.thread_id = None
 
     for m in st.session_state.messages:
         with st.chat_message(m["role"]):
@@ -236,6 +286,7 @@ with chat_tab:
                 st.session_state.messages.append(
                     {"role": "assistant", "content": answer, "route": route, "citations": citations}
                 )
+                st.session_state.pop("conversations_cache", None)  # new/updated convo shows in history
             except httpx.HTTPStatusError as exc:
                 st.error(f"Backend returned {exc.response.status_code}. Is `DEEPSEEK_API_KEY` set and the stack ingested?")
             except Exception as exc:

@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from langchain_core.messages import AIMessageChunk, HumanMessage, ToolMessage
 from sse_starlette.sse import EventSourceResponse
 
-from agents.output import extract_citations, extract_reply
+from agents.output import extract_citations, extract_reply, reconstruct_messages
 from app.schemas import ChatRequest, ChatResponse
 
 logger = logging.getLogger(__name__)
@@ -58,6 +58,60 @@ def chat(req: ChatRequest, graph=Depends(get_graph)) -> ChatResponse:
         thread_id=thread_id,
         route=result.get("active_domain"),
     )
+
+
+_LIST_THREADS_SQL = (
+    "SELECT thread_id, MAX(checkpoint_id) AS mx FROM checkpoints "
+    "GROUP BY thread_id ORDER BY mx DESC LIMIT ?"
+)
+
+
+@router.get("/conversations")
+def list_conversations(limit: int = 30, graph=Depends(get_graph)):
+    """List past conversations (most recent first), titled by their first user message."""
+    try:
+        rows = graph.checkpointer.conn.execute(_LIST_THREADS_SQL, (limit,)).fetchall()
+    except Exception:
+        logger.exception("Listing conversations failed")
+        return {"conversations": []}
+
+    conversations = []
+    for tid, _mx in rows:
+        try:
+            state = graph.get_state({"configurable": {"thread_id": tid}})
+            turns = reconstruct_messages(state.values.get("messages", []))
+        except Exception:
+            turns = []
+        title = next((t["content"] for t in turns if t["role"] == "user"), None)
+        if not title:
+            continue
+        conversations.append(
+            {"thread_id": tid, "title": title[:80], "turns": sum(1 for t in turns if t["role"] == "user")}
+        )
+    return {"conversations": conversations}
+
+
+@router.get("/conversations/{thread_id}")
+def get_conversation(thread_id: str, graph=Depends(get_graph)):
+    """Return a past conversation's messages as display turns."""
+    try:
+        state = graph.get_state({"configurable": {"thread_id": thread_id}})
+        messages = state.values.get("messages", [])
+    except Exception:
+        logger.exception("Loading conversation %s failed", thread_id)
+        raise HTTPException(status_code=404, detail="Conversation not found.")
+    return {"thread_id": thread_id, "messages": reconstruct_messages(messages)}
+
+
+@router.delete("/conversations/{thread_id}")
+def delete_conversation(thread_id: str, graph=Depends(get_graph)):
+    """Delete a stored conversation from the checkpointer."""
+    try:
+        graph.checkpointer.delete_thread(thread_id)
+    except Exception:
+        logger.exception("Deleting conversation %s failed", thread_id)
+        raise HTTPException(status_code=503, detail="Could not delete conversation.")
+    return {"deleted": thread_id}
 
 
 @router.get("/health")
