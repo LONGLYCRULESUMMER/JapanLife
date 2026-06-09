@@ -1,0 +1,16 @@
+.env
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+chroma_db/
+data/processed/
+dist/
+*.egg-info/
+.venv/
+.mypy_cache/
+
+# IDE / OS / local state
+.idea/
+.DS_Store
+*.db
