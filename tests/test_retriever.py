@@ -61,3 +61,16 @@ def test_search_degrades_when_es_raises(monkeypatch, qdrant):
     r = HybridRetriever(es=_BrokenES(), qdrant=qdrant)
     out = r.search("anything", top_k=5)
     assert len(out) >= 1
+
+
+def test_search_knowledge_base_uses_injected_retriever():
+    from rag.retriever import search_knowledge_base
+
+    class _R:
+        def search(self, query, domain=None, top_k=None):
+            return [RetrievedChunk(text="body text", metadata={}, score=1.0, citation="Doc | S1")]
+
+    out = search_knowledge_base("q", retriever=_R())
+    assert out["result_count"] == 1
+    assert "[Source 1: Doc | S1]" in out["context"]
+    assert "[1] Doc | S1" in out["citations"]

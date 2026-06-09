@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 
 from core.config import settings
@@ -8,6 +9,8 @@ from rag.es_store import ESStore
 from rag.hybrid import fuse
 from rag.qdrant_store import QdrantStore
 from rag.rerank import rerank
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -34,11 +37,13 @@ class HybridRetriever:
         top_k = top_k or settings.retrieval_top_k
         try:
             es_hits = self.es.search(query, top_k=top_k, domain=domain)
-        except Exception:
+        except Exception as exc:
+            logger.warning("ElasticSearch retrieval failed, degrading to Qdrant-only: %s", exc)
             es_hits = []
         try:
             qd_hits = self.qdrant.search(embed_query(query), top_k=top_k, domain=domain)
-        except Exception:
+        except Exception as exc:
+            logger.warning("Qdrant retrieval failed, degrading to ES-only: %s", exc)
             qd_hits = []
 
         fused = fuse(es_hits, qd_hits, k=settings.rrf_k)
@@ -54,9 +59,23 @@ class HybridRetriever:
         ]
 
 
-def search_knowledge_base(query: str, domain: str = "", top_k: int = 5) -> dict:
+_default_retriever: HybridRetriever | None = None
+
+
+def get_default_retriever() -> HybridRetriever:
+    """Return a process-wide HybridRetriever, reusing pooled ES/Qdrant clients."""
+    global _default_retriever
+    if _default_retriever is None:
+        _default_retriever = HybridRetriever()
+    return _default_retriever
+
+
+def search_knowledge_base(
+    query: str, domain: str = "", top_k: int = 5, retriever: HybridRetriever | None = None
+) -> dict:
     """Plain-function knowledge search; Plan 2 wraps this as a LangChain @tool."""
-    results = HybridRetriever().search(query, domain=domain or None)[:top_k]
+    retriever = retriever or get_default_retriever()
+    results = retriever.search(query, domain=domain or None)[:top_k]
     context = "\n\n---\n\n".join(
         f"[Source {i}: {r.citation}]\n{r.text}" for i, r in enumerate(results, 1)
     )
