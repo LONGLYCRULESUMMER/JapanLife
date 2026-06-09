@@ -1,16 +1,22 @@
-.PHONY: install serve ingest test clean
+.PHONY: install up down ingest eval test test-all
 
 install:
 	poetry install
 
-serve:
-	cd japan_life && poetry run adk web .
+up:
+	docker compose up -d --build
+
+down:
+	docker compose down
 
 ingest:
-	poetry run python -m rag.ingestion
+	poetry run python -m rag.ingest
+
+eval:
+	poetry run python -m eval.run_eval
 
 test:
-	poetry run pytest -v
+	poetry run pytest -v -m "not integration"
 
-clean:
-	rm -rf chroma_db/ data/processed/ __pycache__/
+test-all:
+	poetry run pytest -v
