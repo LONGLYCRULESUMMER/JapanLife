@@ -21,6 +21,12 @@ def get_graph(request: Request):
     return request.app.state.graph
 
 
+def get_retriever():
+    from rag.retriever import get_default_retriever
+
+    return get_default_retriever()
+
+
 def _initial_state(message: str) -> dict:
     return {"messages": [HumanMessage(content=message)], "user_language": "", "active_domain": None, "citations": []}
 
@@ -59,6 +65,29 @@ def health():
     es = _ok(lambda: ESStore().client.info())
     qd = _ok(lambda: QdrantStore().client.get_collections())
     return {"status": "ok" if es and qd else "degraded", "elasticsearch": es, "qdrant": qd}
+
+
+@router.get("/search")
+def search(q: str, domain: str = "", top_k: int = 5, retriever=Depends(get_retriever)):
+    try:
+        chunks = retriever.search(q, domain=domain or None)[:top_k]
+    except Exception:
+        logger.exception("Search failed for query %r", q)
+        raise HTTPException(status_code=503, detail="Search is temporarily unavailable.")
+    return {
+        "query": q,
+        "domain": domain or None,
+        "results": [
+            {
+                "rank": i,
+                "citation": c.citation,
+                "score": round(c.score, 4),
+                "domain": c.metadata.get("domain"),
+                "snippet": c.text[:400],
+            }
+            for i, c in enumerate(chunks, 1)
+        ],
+    }
 
 
 @router.post("/chat/stream")

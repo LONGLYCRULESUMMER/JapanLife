@@ -65,3 +65,29 @@ def test_chat_returns_503_when_graph_fails(monkeypatch):
         r = c.post("/chat", json={"message": "hi"})
     assert r.status_code == 503
     app.dependency_overrides.clear()
+
+
+def test_search_returns_ranked_chunks(monkeypatch):
+    from rag.retriever import RetrievedChunk
+    from app.routes import get_retriever
+
+    monkeypatch.setattr(settings, "deepseek_api_key", "test-key-not-used")
+
+    class _StubRetriever:
+        def search(self, query, domain=None, top_k=None):
+            return [
+                RetrievedChunk(text="tax body text here", metadata={"domain": "tax"}, score=0.9, citation="Doc A | S1"),
+                RetrievedChunk(text="more text", metadata={"domain": "tax"}, score=0.8, citation="Doc B | S2"),
+            ]
+
+    app.dependency_overrides[get_retriever] = lambda: _StubRetriever()
+    with TestClient(app) as c:
+        r = c.get("/search", params={"q": "確定申告", "top_k": 2})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["query"] == "確定申告"
+    assert len(body["results"]) == 2
+    assert body["results"][0]["citation"] == "Doc A | S1"
+    assert body["results"][0]["score"] == 0.9
+    assert body["results"][0]["domain"] == "tax"
+    app.dependency_overrides.clear()
