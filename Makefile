@@ -1,4 +1,4 @@
-.PHONY: install up down ingest eval test test-all
+.PHONY: install up down ingest eval test test-all serve
 
 install:
 	poetry install
@@ -20,3 +20,6 @@ test:
 
 test-all:
 	poetry run pytest -v
+
+serve:
+	poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000

@@ -49,3 +49,17 @@ store is down). `rag/ingest.py` indexes `knowledge/` into both stores.
   rare-term / exact-match queries (proper nouns, numbers, Japanese terms) where BM25
   complements dense recall. Metrics are reported as-is rather than tuned to win.
 
+
+## Plan 2: Multi-agent service
+
+LangGraph supervisor routes to three specialists (tax / visa / ward_office), each with
+domain tools + hybrid retrieval; ward_office can hand off to visa/tax. DeepSeek is the LLM
+(set `DEEPSEEK_API_KEY` in `.env`). Conversation state is persisted per `thread_id` via a
+SQLite checkpointer.
+
+```bash
+make serve   # FastAPI at http://localhost:8000 (needs DEEPSEEK_API_KEY + make up)
+curl -s localhost:8000/chat -H 'content-type: application/json' \
+  -d '{"message":"When is the tax filing deadline?"}'
+curl -s localhost:8000/health
+```
