@@ -9,3 +9,8 @@ dist/
 *.egg-info/
 .venv/
 .mypy_cache/
+
+# IDE / OS / local state
+.idea/
+.DS_Store
+*.db
