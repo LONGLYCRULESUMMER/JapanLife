@@ -1,0 +1,16 @@
+.git
+.venv
+__pycache__
+*.pyc
+*.pyo
+.pytest_cache
+.mypy_cache
+chroma_db
+docs
+tests
+eval
+.worktrees
+*.db
+.env
+.idea
+.DS_Store
