@@ -4,6 +4,8 @@ from langchain_core.tools import StructuredTool
 
 from rag.retriever import search_knowledge_base as _search
 
+KNOWLEDGE_TOOL_NAME = "search_knowledge_base"
+
 
 def make_knowledge_search_tool(domain: str) -> StructuredTool:
     """Build a domain-scoped knowledge-search tool for a specialist agent."""
@@ -18,7 +20,7 @@ def make_knowledge_search_tool(domain: str) -> StructuredTool:
 
     return StructuredTool.from_function(
         func=_run,
-        name="search_knowledge_base",
+        name=KNOWLEDGE_TOOL_NAME,
         description=(
             f"Search the authoritative {domain} knowledge base for living-in-Japan "
             "information. Input: a natural-language query in English or Japanese. "

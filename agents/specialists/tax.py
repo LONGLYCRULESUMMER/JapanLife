@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from langgraph.prebuilt import create_react_agent
+from langchain.agents import create_agent
 
 from agents.prompts import TAX_PROMPT
 from tools.knowledge_tool import make_knowledge_search_tool
@@ -12,4 +12,4 @@ def tax_tools():
 
 
 def build_tax_agent(llm):
-    return create_react_agent(llm, tools=tax_tools(), prompt=TAX_PROMPT, name="tax")
+    return create_agent(llm, tools=tax_tools(), system_prompt=TAX_PROMPT, name="tax")

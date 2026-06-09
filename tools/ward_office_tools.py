@@ -41,8 +41,11 @@ def days_until_move_in_deadline(move_in_date: str, today: str | None = None) -> 
     Returns:
         dict with deadline (YYYY-MM-DD), days_remaining (int), and overdue (bool).
     """
-    move = date.fromisoformat(move_in_date)
-    now = date.fromisoformat(today) if today else date.today()
+    try:
+        move = date.fromisoformat(move_in_date)
+        now = date.fromisoformat(today) if today else date.today()
+    except ValueError:
+        return {"error": "Invalid date format. Use YYYY-MM-DD."}
     deadline = move + timedelta(days=14)
     days_remaining = (deadline - now).days
     return {

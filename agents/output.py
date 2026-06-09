@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from langchain_core.messages import AIMessage, AnyMessage, ToolMessage
 
+from tools.knowledge_tool import KNOWLEDGE_TOOL_NAME
+
 
 def extract_reply(messages: list[AnyMessage]) -> str:
     """Return the text of the last non-empty AI message."""
@@ -15,7 +17,7 @@ def extract_citations(messages: list[AnyMessage]) -> list[str]:
     """Collect citation lines from knowledge-search tool messages."""
     cites: list[str] = []
     for m in messages:
-        if isinstance(m, ToolMessage) and getattr(m, "name", "") == "search_knowledge_base":
+        if isinstance(m, ToolMessage) and getattr(m, "name", "") == KNOWLEDGE_TOOL_NAME:
             text = m.content if isinstance(m.content, str) else str(m.content)
             if "Sources:" in text:
                 for line in text.split("Sources:", 1)[1].strip().splitlines():

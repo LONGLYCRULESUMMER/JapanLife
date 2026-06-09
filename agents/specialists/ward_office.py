@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from langgraph.prebuilt import create_react_agent
+from langchain.agents import create_agent
 
 from agents.handoffs import make_handoff_tool
 from agents.prompts import WARD_OFFICE_PROMPT
@@ -18,4 +18,4 @@ def ward_office_tools():
 
 
 def build_ward_office_agent(llm):
-    return create_react_agent(llm, tools=ward_office_tools(), prompt=WARD_OFFICE_PROMPT, name="ward_office")
+    return create_agent(llm, tools=ward_office_tools(), system_prompt=WARD_OFFICE_PROMPT, name="ward_office")

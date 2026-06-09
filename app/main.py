@@ -14,6 +14,8 @@ from core.llm import get_llm
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # check_same_thread=False lets uvicorn's threadpool share this connection; LangGraph's
+    # SqliteSaver serialises access internally. For high concurrency, use a Postgres checkpointer.
     conn = sqlite3.connect(settings.checkpoint_db, check_same_thread=False)
     saver = SqliteSaver(conn)
     saver.setup()

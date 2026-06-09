@@ -31,3 +31,8 @@ def test_days_until_deadline_overdue():
 def test_ward_office_tools_exported():
     names = {t.name for t in WARD_OFFICE_TOOLS}
     assert names == {"moving_in_checklist", "days_until_move_in_deadline"}
+
+
+def test_days_until_deadline_invalid_date_returns_error():
+    r = days_until_move_in_deadline("not-a-date")
+    assert "error" in r

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from langgraph.prebuilt import create_react_agent
+from langchain.agents import create_agent
 
 from agents.prompts import VISA_PROMPT
 from tools.knowledge_tool import make_knowledge_search_tool
@@ -12,4 +12,4 @@ def visa_tools():
 
 
 def build_visa_agent(llm):
-    return create_react_agent(llm, tools=visa_tools(), prompt=VISA_PROMPT, name="visa")
+    return create_agent(llm, tools=visa_tools(), system_prompt=VISA_PROMPT, name="visa")

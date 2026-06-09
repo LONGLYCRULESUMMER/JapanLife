@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from langchain_core.messages import SystemMessage
+from langchain_core.messages import AIMessage, SystemMessage
 from langgraph.graph import END
 from langgraph.types import Command
 from pydantic import BaseModel
@@ -19,7 +19,13 @@ def make_supervisor(llm):
     router = llm.with_structured_output(Route)
 
     def supervisor(state: GraphState) -> Command:
-        decision = router.invoke([SystemMessage(content=SUPERVISOR_PROMPT), *state["messages"]])
+        messages = state["messages"]
+        # Deterministic backstop: once a specialist has produced an answer (the last
+        # message is an AIMessage), finish. Guarantees termination even if the LLM never
+        # returns FINISH, and saves an extra model call.
+        if messages and isinstance(messages[-1], AIMessage):
+            return Command(goto=END)
+        decision = router.invoke([SystemMessage(content=SUPERVISOR_PROMPT), *messages])
         if decision.next == "FINISH":
             return Command(goto=END)
         return Command(goto=decision.next, update={"active_domain": decision.next})

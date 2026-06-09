@@ -29,3 +29,17 @@ def test_supervisor_finishes():
     sup = make_supervisor(_FakeStructuredLLM("FINISH"))
     cmd = sup({"messages": [AIMessage("answer")], "user_language": "en", "active_domain": "tax", "citations": []})
     assert cmd.goto == END
+
+
+def test_supervisor_finishes_deterministically_without_calling_llm():
+    class _RaisingLLM:
+        def with_structured_output(self, schema):
+            class _R:
+                def invoke(self, _messages):
+                    raise AssertionError("router must not be called when a specialist already answered")
+
+            return _R()
+
+    sup = make_supervisor(_RaisingLLM())
+    cmd = sup({"messages": [AIMessage("specialist answer")], "user_language": "en", "active_domain": "tax", "citations": []})
+    assert cmd.goto == END

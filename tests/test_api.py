@@ -51,3 +51,17 @@ def test_health_returns_dependency_status(monkeypatch):
     assert r.status_code == 200
     body = r.json()
     assert "elasticsearch" in body and "qdrant" in body and "status" in body
+
+
+def test_chat_returns_503_when_graph_fails(monkeypatch):
+    monkeypatch.setattr(settings, "deepseek_api_key", "test-key-not-used")
+
+    class _BoomGraph:
+        def invoke(self, state, config=None):
+            raise RuntimeError("llm down")
+
+    app.dependency_overrides[get_graph] = lambda: _BoomGraph()
+    with TestClient(app) as c:
+        r = c.post("/chat", json={"message": "hi"})
+    assert r.status_code == 503
+    app.dependency_overrides.clear()
