@@ -96,7 +96,23 @@ make eval                     # hybrid vs es-only / qdrant-only retrieval metric
 |---|---|---|---|
 | POST | `/chat` | `{"message": str, "thread_id"?: str}` | `{reply, citations[], thread_id, route}` |
 | POST | `/chat/stream` | same | Server-Sent Events (`update` / `done` / `error`) |
+| GET | `/search` | `?q=&domain=&top_k=` | `{query, domain, results[]}` (ranked chunks) |
 | GET | `/health` | — | `{status, elasticsearch, qdrant}` |
+
+## Demo (Streamlit)
+
+A decoupled Streamlit page showcases the tech stack, **live architecture diagrams**, an
+interactive **multi-agent chat**, and a **hybrid-retrieval inspector**. It talks to the FastAPI
+backend over HTTP.
+
+```bash
+make up         # (or make serve) start the backend (ES + Qdrant + API)
+make demo       # Streamlit at http://localhost:8501
+```
+
+Set `API_URL` to point the page at a non-default backend (default `http://localhost:8000`). The
+overview/architecture sections render without a backend; chat and the retrieval inspector show a
+status banner if the API is unreachable.
 
 ## Evaluation
 
@@ -133,10 +149,11 @@ core/        config (pydantic-settings), DeepSeek LLM factory, language detectio
 rag/         chunking, embeddings, es_store, qdrant_store, hybrid (RRF), rerank, retriever, ingest
 tools/       tax / visa / ward_office calculators + domain-scoped knowledge tool
 agents/      state, prompts, supervisor, handoffs, specialists/, graph, output
-app/         FastAPI: schemas, routes (/chat, /chat/stream, /health), main (lifespan)
+app/         FastAPI: schemas, routes (/chat, /chat/stream, /search, /health), main (lifespan)
 knowledge/   bilingual markdown knowledge base (tax / visa / ward_office)
 eval/        metrics (recall@k, MRR) + hybrid-vs-baseline harness + datasets
 docker/      custom ElasticSearch image (kuromoji)
+streamlit_app.py   decoupled Streamlit demo UI (overview, chat, retrieval inspector)
 ```
 
 ## Testing & CI

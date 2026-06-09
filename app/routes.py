@@ -5,20 +5,36 @@ import logging
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import AIMessageChunk, HumanMessage, ToolMessage
 from sse_starlette.sse import EventSourceResponse
 
-from agents.output import extract_citations, extract_reply
+from agents.output import extract_citations, extract_reply, reconstruct_messages
 from app.schemas import ChatRequest, ChatResponse
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
 _RECURSION_LIMIT = 50
+_SPECIALISTS = {"tax", "visa", "ward_office"}
+
+
+def _domain_from_namespace(namespace) -> str | None:
+    """A specialist subgraph streams under a namespace like ('tax:<uuid>',)."""
+    for part in namespace or ():
+        name = part.split(":", 1)[0]
+        if name in _SPECIALISTS:
+            return name
+    return None
 
 
 def get_graph(request: Request):
     return request.app.state.graph
+
+
+def get_retriever():
+    from rag.retriever import get_default_retriever
+
+    return get_default_retriever()
 
 
 def _initial_state(message: str) -> dict:
@@ -44,6 +60,60 @@ def chat(req: ChatRequest, graph=Depends(get_graph)) -> ChatResponse:
     )
 
 
+_LIST_THREADS_SQL = (
+    "SELECT thread_id, MAX(checkpoint_id) AS mx FROM checkpoints "
+    "GROUP BY thread_id ORDER BY mx DESC LIMIT ?"
+)
+
+
+@router.get("/conversations")
+def list_conversations(limit: int = 30, graph=Depends(get_graph)):
+    """List past conversations (most recent first), titled by their first user message."""
+    try:
+        rows = graph.checkpointer.conn.execute(_LIST_THREADS_SQL, (limit,)).fetchall()
+    except Exception:
+        logger.exception("Listing conversations failed")
+        return {"conversations": []}
+
+    conversations = []
+    for tid, _mx in rows:
+        try:
+            state = graph.get_state({"configurable": {"thread_id": tid}})
+            turns = reconstruct_messages(state.values.get("messages", []))
+        except Exception:
+            turns = []
+        title = next((t["content"] for t in turns if t["role"] == "user"), None)
+        if not title:
+            continue
+        conversations.append(
+            {"thread_id": tid, "title": title[:80], "turns": sum(1 for t in turns if t["role"] == "user")}
+        )
+    return {"conversations": conversations}
+
+
+@router.get("/conversations/{thread_id}")
+def get_conversation(thread_id: str, graph=Depends(get_graph)):
+    """Return a past conversation's messages as display turns."""
+    try:
+        state = graph.get_state({"configurable": {"thread_id": thread_id}})
+        messages = state.values.get("messages", [])
+    except Exception:
+        logger.exception("Loading conversation %s failed", thread_id)
+        raise HTTPException(status_code=404, detail="Conversation not found.")
+    return {"thread_id": thread_id, "messages": reconstruct_messages(messages)}
+
+
+@router.delete("/conversations/{thread_id}")
+def delete_conversation(thread_id: str, graph=Depends(get_graph)):
+    """Delete a stored conversation from the checkpointer."""
+    try:
+        graph.checkpointer.delete_thread(thread_id)
+    except Exception:
+        logger.exception("Deleting conversation %s failed", thread_id)
+        raise HTTPException(status_code=503, detail="Could not delete conversation.")
+    return {"deleted": thread_id}
+
+
 @router.get("/health")
 def health():
     from rag.es_store import ESStore
@@ -61,26 +131,66 @@ def health():
     return {"status": "ok" if es and qd else "degraded", "elasticsearch": es, "qdrant": qd}
 
 
+@router.get("/search")
+def search(q: str, domain: str = "", top_k: int = 5, retriever=Depends(get_retriever)):
+    try:
+        chunks = retriever.search(q, domain=domain or None)[:top_k]
+    except Exception:
+        logger.exception("Search failed for query %r", q)
+        raise HTTPException(status_code=503, detail="Search is temporarily unavailable.")
+    return {
+        "query": q,
+        "domain": domain or None,
+        "results": [
+            {
+                "rank": i,
+                "citation": c.citation,
+                "score": round(c.score, 4),
+                "domain": c.metadata.get("domain"),
+                "snippet": c.text[:400],
+            }
+            for i, c in enumerate(chunks, 1)
+        ],
+    }
+
+
 @router.post("/chat/stream")
 def chat_stream(req: ChatRequest, graph=Depends(get_graph)):
     thread_id = req.thread_id or str(uuid.uuid4())
 
+    def _sse(event: str, payload: dict) -> dict:
+        return {"event": event, "data": json.dumps(payload, ensure_ascii=False)}
+
     def event_gen():
+        tool_messages: list = []
+        route_sent: str | None = None
         try:
-            for update in graph.stream(
+            for namespace, (chunk, _meta) in graph.stream(
                 _initial_state(req.message),
                 config={"configurable": {"thread_id": thread_id}, "recursion_limit": _RECURSION_LIMIT},
-                stream_mode="updates",
+                stream_mode="messages",
+                subgraphs=True,
             ):
-                for node, payload in update.items():
-                    msgs = payload.get("messages", []) if isinstance(payload, dict) else []
-                    text = extract_reply(msgs)
-                    data = {"node": node, "delta": text, "route": payload.get("active_domain") if isinstance(payload, dict) else None}
-                    yield {"event": "update", "data": json.dumps(data, ensure_ascii=False)}
+                domain = _domain_from_namespace(namespace)
+                if domain and domain != route_sent:
+                    route_sent = domain
+                    yield _sse("route", {"route": domain})
+
+                if isinstance(chunk, ToolMessage):
+                    tool_messages.append(chunk)
+                    # A tool ran, so any text streamed before it was a preamble: tell the
+                    # client to reset the in-progress answer and surface the tool step.
+                    yield _sse("tool", {"name": getattr(chunk, "name", "") or "tool"})
+                    continue
+
+                if domain and isinstance(chunk, AIMessageChunk):
+                    text = chunk.content if isinstance(chunk.content, str) else ""
+                    if text:
+                        yield _sse("token", {"text": text})
         except Exception:
             logger.exception("Chat stream failed for thread %s", thread_id)
-            yield {"event": "error", "data": json.dumps({"error": "The assistant stream failed."}, ensure_ascii=False)}
+            yield _sse("error", {"error": "The assistant stream failed."})
             return
-        yield {"event": "done", "data": json.dumps({"thread_id": thread_id}, ensure_ascii=False)}
+        yield _sse("done", {"thread_id": thread_id, "citations": extract_citations(tool_messages)})
 
     return EventSourceResponse(event_gen())
