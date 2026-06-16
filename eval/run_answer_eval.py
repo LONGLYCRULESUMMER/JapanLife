@@ -113,23 +113,28 @@ def build_real_answerer():
             "active_domain": None,
             "citations": [],
         }
-        result = graph.invoke(
-            state,
-            config={"configurable": {"thread_id": f"answer-eval-{counter['n']}"},
-                    "recursion_limit": 50},
-        )
-        messages = result["messages"]
+        try:
+            result = graph.invoke(
+                state,
+                config={"configurable": {"thread_id": f"answer-eval-{counter['n']}"},
+                        "recursion_limit": 50},
+            )
+            messages = result["messages"]
+            answer = extract_reply(messages)
+            citations = extract_citations(messages)
+            route = result.get("active_domain")
+        except Exception as exc:  # keep the eval running if one question fails
+            answer, citations, route = f"[error: {exc}]", [], None
         contexts = []
         try:
-            for chunk in retriever.search(question)[:5]:
-                contexts.append(chunk.text)
+            contexts = [chunk.text for chunk in retriever.search(question)[:5]]
         except Exception:
             contexts = []
         return {
-            "answer": extract_reply(messages),
-            "citations": extract_citations(messages),
+            "answer": answer,
+            "citations": citations,
             "contexts": contexts,
-            "route": result.get("active_domain"),
+            "route": route,
         }
 
     return answerer
