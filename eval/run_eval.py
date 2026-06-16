@@ -12,17 +12,36 @@ from rag.qdrant_store import QdrantStore
 from rag.rerank import rerank
 
 DATASETS = Path(__file__).resolve().parent / "datasets"
+DOMAINS = ("tax", "visa", "ward_office")
 K = 5
 
 
-def _load_cases() -> list[dict]:
+def load_cases() -> list[dict]:
+    """Load the retrieval evaluation cases for the three known domains.
+
+    Loaded by explicit domain name (not a glob) so unrelated datasets such as
+    ``answer_cases.jsonl`` never leak into the retrieval evaluation.
+    """
     cases = []
-    for f in sorted(DATASETS.glob("*.jsonl")):
-        for line in f.read_text(encoding="utf-8").splitlines():
+    for domain in DOMAINS:
+        path = DATASETS / f"{domain}.jsonl"
+        for line in path.read_text(encoding="utf-8").splitlines():
             line = line.strip()
             if line:
                 cases.append(json.loads(line))
     return cases
+
+
+def dataset_composition(cases: list[dict] | None = None) -> dict:
+    """Summarise how many cases there are per language and per query type."""
+    cases = cases if cases is not None else load_cases()
+    comp: dict = {"total": len(cases), "lang": {}, "type": {}}
+    for case in cases:
+        lang = case.get("lang", "?")
+        typ = case.get("type", "?")
+        comp["lang"][lang] = comp["lang"].get(lang, 0) + 1
+        comp["type"][typ] = comp["type"].get(typ, 0) + 1
+    return comp
 
 
 def _doc_ids(hits: list[tuple[str, float, dict]]) -> list[str]:
@@ -36,7 +55,7 @@ def _doc_ids(hits: list[tuple[str, float, dict]]) -> list[str]:
 
 
 def _evaluate(name: str, run) -> tuple[float, float]:
-    cases = _load_cases()
+    cases = load_cases()
     recalls, mrrs = [], []
     for case in cases:
         relevant = set(case["relevant"])
@@ -53,6 +72,11 @@ def main() -> None:
     es = ESStore()
     qd = QdrantStore()
     top_k = settings.retrieval_top_k
+
+    comp = dataset_composition()
+    print(f"=== Dataset: {comp['total']} cases ===")
+    print(f"  by language: {comp['lang']}")
+    print(f"  by type:     {comp['type']}\n")
 
     def es_only(q: str):
         return es.search(q, top_k=top_k)
