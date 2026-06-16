@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from langgraph.checkpoint.sqlite import SqliteSaver
 
 from agents.graph import build_graph
+from app.jobs import JobRegistry
 from app.routes import router
 from core.config import settings
 from core.llm import get_llm
@@ -20,6 +21,7 @@ async def lifespan(app: FastAPI):
     saver = SqliteSaver(conn)
     saver.setup()
     app.state.graph = build_graph(llm=get_llm(), checkpointer=saver)
+    app.state.job_registry = JobRegistry()
     try:
         yield
     finally:

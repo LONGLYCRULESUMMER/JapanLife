@@ -4,7 +4,7 @@ import json
 import logging
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
 from langchain_core.messages import AIMessageChunk, HumanMessage, ToolMessage
 from sse_starlette.sse import EventSourceResponse
 
@@ -35,6 +35,17 @@ def get_retriever():
     from rag.retriever import get_default_retriever
 
     return get_default_retriever()
+
+
+def get_job_registry(request: Request):
+    return request.app.state.job_registry
+
+
+def get_ingest_fn():
+    """Return the default ingest callable. Overridable in tests (no services needed)."""
+    from rag.ingest import ingest
+
+    return ingest
 
 
 def _initial_state(message: str) -> dict:
@@ -152,6 +163,31 @@ def search(q: str, domain: str = "", top_k: int = 5, retriever=Depends(get_retri
             for i, c in enumerate(chunks, 1)
         ],
     }
+
+
+@router.post("/admin/ingest", status_code=202)
+def trigger_ingest(
+    background_tasks: BackgroundTasks,
+    registry=Depends(get_job_registry),
+    ingest_fn=Depends(get_ingest_fn),
+):
+    """Kick off a knowledge-base ingest as a background job; returns the job record."""
+    job = registry.create()
+    background_tasks.add_task(registry.run, job.id, ingest_fn)
+    return job.to_dict()
+
+
+@router.get("/admin/ingest/jobs")
+def list_ingest_jobs(registry=Depends(get_job_registry)):
+    return {"jobs": [job.to_dict() for job in registry.list()]}
+
+
+@router.get("/admin/ingest/jobs/{job_id}")
+def get_ingest_job(job_id: str, registry=Depends(get_job_registry)):
+    job = registry.get(job_id)
+    if job is None:
+        raise HTTPException(status_code=404, detail="Ingest job not found.")
+    return job.to_dict()
 
 
 @router.post("/chat/stream")
