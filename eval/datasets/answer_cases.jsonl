@@ -1,0 +1,15 @@
+{"question": "When is the income tax filing deadline in Japan?", "expected_route": "tax", "expects_disclaimer": true, "lang": "en"}
+{"question": "ふるさと納税の限度額の目安を教えてください", "expected_route": "tax", "expects_disclaimer": true, "lang": "ja"}
+{"question": "How is resident tax calculated and when is it billed?", "expected_route": "tax", "expects_disclaimer": true, "lang": "en"}
+{"question": "青色申告の特別控除は最大いくらですか", "expected_route": "tax", "expects_disclaimer": true, "lang": "ja"}
+{"question": "How many years do I need for permanent residency?", "expected_route": "visa", "expects_disclaimer": true, "lang": "en"}
+{"question": "在留期間の更新はいつ申請できますか", "expected_route": "visa", "expects_disclaimer": true, "lang": "ja"}
+{"question": "I lost my residence card, what should I do?", "expected_route": "visa", "expects_disclaimer": true, "lang": "en"}
+{"question": "学生は資格外活動許可で週に何時間まで働けますか", "expected_route": "visa", "expects_disclaimer": true, "lang": "ja"}
+{"question": "How do I sort my household garbage?", "expected_route": "ward_office", "expects_disclaimer": false, "lang": "en"}
+{"question": "転入届はいつまでに区役所へ出す必要がありますか", "expected_route": "ward_office", "expects_disclaimer": false, "lang": "ja"}
+{"question": "Who needs to enroll in National Health Insurance?", "expected_route": "ward_office", "expects_disclaimer": true, "lang": "en"}
+{"question": "国民年金は何歳から何歳まで加入しますか", "expected_route": "ward_office", "expects_disclaimer": true, "lang": "ja"}
+{"question": "How do I get a copy of my residence certificate?", "expected_route": "ward_office", "expects_disclaimer": false, "lang": "en"}
+{"question": "Do I need a My Number card to use e-Tax?", "expected_route": ["tax", "ward_office"], "expects_disclaimer": true, "lang": "en"}
+{"question": "粗大ごみはどうやって捨てますか", "expected_route": "ward_office", "expects_disclaimer": false, "lang": "ja"}
