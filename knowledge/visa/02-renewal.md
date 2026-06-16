@@ -1,3 +1,10 @@
+---
+doc_title: Visa Renewal and Change of Status
+source_url: https://www.moj.go.jp/isa/applications/procedures/nyuukokukanri10_00011.html
+language: en
+last_updated: 2025-06-01
+---
+
 # Visa Renewal and Change of Status
 
 ## Renewal (在留期間更新)

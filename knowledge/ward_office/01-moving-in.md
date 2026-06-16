@@ -1,3 +1,10 @@
+---
+doc_title: Moving-In Notification Guide
+source_url: https://www.soumu.go.jp/main_sosiki/jichi_gyousei/c-gyousei/zairyu.html
+language: en
+last_updated: 2025-06-01
+---
+
 # Moving In: Ward Office Procedures (転入届)
 
 ## Moving-in Notification (転入届)

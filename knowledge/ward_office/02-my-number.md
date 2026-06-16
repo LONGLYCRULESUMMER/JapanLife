@@ -1,3 +1,10 @@
+---
+doc_title: My Number Guide
+source_url: https://www.kojinbango-card.go.jp/en/
+language: en
+last_updated: 2025-06-01
+---
+
 # My Number (マイナンバー)
 
 ## What Is My Number

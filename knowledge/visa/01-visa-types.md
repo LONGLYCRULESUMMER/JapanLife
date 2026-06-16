@@ -1,3 +1,10 @@
+---
+doc_title: Visa Types for Foreign Residents
+source_url: https://www.moj.go.jp/isa/applications/status/index.html
+language: en
+last_updated: 2025-06-01
+---
+
 # Visa Types for Foreign Residents in Japan
 
 ## Work Visa (就労ビザ)
