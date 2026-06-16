@@ -4,6 +4,7 @@ import logging
 from dataclasses import dataclass
 
 from core.config import settings
+from rag.cache import get_retrieval_cache
 from rag.embeddings import embed_query
 from rag.es_store import ESStore
 from rag.hybrid import fuse
@@ -35,6 +36,14 @@ class HybridRetriever:
         self, query: str, domain: str | None = None, top_k: int | None = None
     ) -> list[RetrievedChunk]:
         top_k = top_k or settings.retrieval_top_k
+
+        cache = get_retrieval_cache()
+        cache_key = (query, domain, top_k) if cache is not None else None
+        if cache is not None:
+            hit = cache.get(cache_key)
+            if hit is not None:
+                return hit
+
         try:
             es_hits = self.es.search(query, top_k=top_k, domain=domain)
         except Exception as exc:
@@ -48,7 +57,7 @@ class HybridRetriever:
 
         fused = fuse(es_hits, qd_hits, k=settings.rrf_k)
         reranked = rerank(query, fused, top_n=settings.rerank_top_n) if fused else []
-        return [
+        results = [
             RetrievedChunk(
                 text=pl.get("content", ""),
                 metadata=pl,
@@ -57,6 +66,9 @@ class HybridRetriever:
             )
             for _cid, score, pl in reranked
         ]
+        if cache is not None:
+            cache.set(cache_key, results)
+        return results
 
 
 _default_retriever: HybridRetriever | None = None

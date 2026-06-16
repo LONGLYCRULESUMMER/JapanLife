@@ -21,6 +21,12 @@ class Settings(BaseSettings):
     rerank_top_n: int = 5
     rrf_k: int = 60
 
+    # Caching (see rag/cache.py). All optional and safe to disable.
+    enable_embedding_cache: bool = True
+    embedding_cache_path: str = "./.cache/japanlife_embeddings.db"
+    enable_retrieval_cache: bool = False
+    cache_ttl_seconds: int = 60
+
     checkpoint_db: str = "./japanlife.db"
 
 
