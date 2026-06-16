@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from rag.chunking import Chunk, chunk_markdown
+from rag.chunking import Chunk, chunk_markdown, split_front_matter
 from rag.embeddings import embed_texts
 from rag.es_store import ESStore
 from rag.qdrant_store import QdrantStore
@@ -21,14 +21,15 @@ def load_documents(base: Path = KNOWLEDGE_DIR) -> list[tuple[str, str, str, str]
 def build_chunks(docs: list[tuple[str, str, str, str]]) -> list[Chunk]:
     chunks: list[Chunk] = []
     for domain, filename, title, text in docs:
+        front_matter, body = split_front_matter(text)
         meta = {
             "domain": domain,
             "doc_id": f"{domain}/{filename}",
-            "doc_title": title,
-            "source_url": "",
-            "language": "mixed",
+            "doc_title": front_matter.get("doc_title") or title,
+            "source_url": front_matter.get("source_url", ""),
+            "language": front_matter.get("language", "mixed"),
         }
-        chunks.extend(chunk_markdown(text, meta))
+        chunks.extend(chunk_markdown(body, meta))
     return chunks
 
 

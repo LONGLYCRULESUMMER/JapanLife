@@ -5,6 +5,29 @@ import re
 from dataclasses import dataclass, field
 
 _HEADER_RE = re.compile(r"^(#{1,6})\s+(.*)$")
+_FENCE = "---"
+
+
+def split_front_matter(text: str) -> tuple[dict, str]:
+    """Split a leading ``---`` front-matter block of simple ``key: value`` lines.
+
+    Returns ``(metadata, body)``. If the document has no terminated front-matter
+    block, returns ``({}, text)`` unchanged. Deliberately tolerant (no YAML
+    dependency): blank lines and lines without a colon are skipped.
+    """
+    lines = text.splitlines()
+    if not lines or lines[0].strip() != _FENCE:
+        return {}, text
+    end = next((i for i in range(1, len(lines)) if lines[i].strip() == _FENCE), None)
+    if end is None:
+        return {}, text
+    meta: dict = {}
+    for line in lines[1:end]:
+        key, sep, val = line.partition(":")
+        if sep and key.strip():
+            meta[key.strip()] = val.strip()
+    body = "\n".join(lines[end + 1 :]).lstrip("\n")
+    return meta, body
 
 
 @dataclass

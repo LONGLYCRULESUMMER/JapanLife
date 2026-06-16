@@ -1,4 +1,4 @@
-from rag.chunking import Chunk, chunk_markdown
+from rag.chunking import Chunk, chunk_markdown, split_front_matter
 
 MD = """# 税务指南
 
@@ -36,3 +36,26 @@ def test_chunk_id_is_deterministic_and_unique():
 def test_metadata_is_preserved():
     chunks = chunk_markdown(MD, {"doc_id": "tax/guide.md", "domain": "tax"})
     assert all(c.metadata["domain"] == "tax" for c in chunks)
+
+
+def test_split_front_matter_parses_keys_and_strips_body():
+    text = "---\ndoc_title: My Title\nsource_url: https://example.com/a\n---\n# H\nbody"
+    meta, body = split_front_matter(text)
+    assert meta["doc_title"] == "My Title"
+    assert meta["source_url"] == "https://example.com/a"
+    assert body.startswith("# H")
+    assert "doc_title" not in body
+
+
+def test_split_front_matter_absent_returns_original():
+    text = "# H\nbody"
+    meta, body = split_front_matter(text)
+    assert meta == {}
+    assert body == text
+
+
+def test_split_front_matter_unterminated_is_ignored():
+    text = "---\ndoc_title: X\n# H\nbody"
+    meta, body = split_front_matter(text)
+    assert meta == {}
+    assert body == text
