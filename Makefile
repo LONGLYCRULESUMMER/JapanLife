@@ -1,4 +1,4 @@
-.PHONY: install up down ingest eval test test-all serve build logs ingest-docker demo
+.PHONY: install up down ingest eval answer-eval answer-eval-stub ingest-job-demo cache-test test test-all serve build logs ingest-docker demo
 
 install:
 	poetry install
@@ -14,6 +14,20 @@ ingest:
 
 eval:
 	poetry run python -m eval.run_eval
+
+answer-eval:
+	poetry run python -m eval.run_answer_eval
+
+answer-eval-stub:
+	poetry run python -m eval.run_answer_eval --stub
+
+ingest-job-demo:
+	@JOB=$$(curl -s -X POST localhost:8000/admin/ingest | poetry run python -c "import sys,json;print(json.load(sys.stdin)['id'])"); \
+	echo "submitted job: $$JOB"; sleep 2; \
+	curl -s localhost:8000/admin/ingest/jobs/$$JOB
+
+cache-test:
+	poetry run pytest -q tests/test_cache.py
 
 test:
 	poetry run pytest -v -m "not integration"
