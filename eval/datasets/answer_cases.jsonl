@@ -13,3 +13,13 @@
 {"question": "How do I get a copy of my residence certificate?", "expected_route": "ward_office", "expects_disclaimer": false, "lang": "en"}
 {"question": "Do I need a My Number card to use e-Tax?", "expected_route": ["tax", "ward_office"], "expects_disclaimer": true, "lang": "en"}
 {"question": "粗大ごみはどうやって捨てますか", "expected_route": "ward_office", "expects_disclaimer": false, "lang": "ja"}
+{"question": "What is the consumption tax rate on groceries?", "expected_route": "tax", "expects_disclaimer": true, "lang": "en"}
+{"question": "医療費控除はいくらから受けられますか", "expected_route": "tax", "expects_disclaimer": true, "lang": "ja"}
+{"question": "How much is the dependent deduction?", "expected_route": "tax", "expects_disclaimer": true, "lang": "en"}
+{"question": "高度専門職ビザのポイントは何点必要ですか", "expected_route": "visa", "expects_disclaimer": true, "lang": "ja"}
+{"question": "Can the spouse of a Japanese citizen work freely?", "expected_route": "visa", "expects_disclaimer": true, "lang": "en"}
+{"question": "再入国許可なしで何年まで日本を離れられますか", "expected_route": "visa", "expects_disclaimer": true, "lang": "ja"}
+{"question": "How do I apply for the child allowance?", "expected_route": "ward_office", "expects_disclaimer": false, "lang": "en"}
+{"question": "外国の運転免許を切り替えるには何が必要ですか", "expected_route": "ward_office", "expects_disclaimer": false, "lang": "ja"}
+{"question": "What should I prepare for an earthquake?", "expected_route": "ward_office", "expects_disclaimer": false, "lang": "en"}
+{"question": "I am leaving Japan, what should I do about resident tax?", "expected_route": ["tax", "ward_office"], "expects_disclaimer": true, "lang": "en"}
