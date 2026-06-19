@@ -20,3 +20,12 @@
 {"question": "永住申請では年金や税金の支払い記録は必要ですか", "relevant": ["visa/04-permanent-residency.md"], "lang": "ja", "type": "semantic"}
 {"question": "What are common mistakes that cause visa applications to be denied?", "relevant": ["visa/09-applications-faq.md"], "lang": "en", "type": "keyword"}
 {"question": "学生ビザから就労ビザへ変更するときによくある失敗は何ですか", "relevant": ["visa/07-student-and-work-visa.md", "visa/03-change-of-status.md"], "lang": "ja", "type": "confusing"}
+{"question": "How many points do I need for the Highly-Skilled Professional visa?", "relevant": ["visa/10-highly-skilled-professional.md"], "lang": "en", "type": "numeric"}
+{"question": "高度専門職だと永住は何年で申請できますか", "relevant": ["visa/10-highly-skilled-professional.md", "visa/04-permanent-residency.md"], "lang": "ja", "type": "cross"}
+{"question": "What is the difference between naturalization and permanent residency?", "relevant": ["visa/11-naturalization-vs-pr.md"], "lang": "en", "type": "semantic"}
+{"question": "Can a spouse of a Japanese national work without restrictions?", "relevant": ["visa/12-spouse-of-japanese.md"], "lang": "en", "type": "semantic"}
+{"question": "再入国許可は何年以内の帰国なら不要ですか", "relevant": ["visa/13-re-entry-permit.md"], "lang": "ja", "type": "numeric"}
+{"question": "Do I need to tell immigration if I change jobs?", "relevant": ["visa/14-status-change-notifications.md"], "lang": "en", "type": "keyword"}
+{"question": "在留資格の種類にはどんなものがありますか", "relevant": ["visa/01-visa-types.ja.md", "visa/01-visa-types.md"], "lang": "ja", "type": "semantic"}
+{"question": "永住許可の要件は何年の在留ですか", "relevant": ["visa/04-permanent-residency.ja.md", "visa/04-permanent-residency.md"], "lang": "ja", "type": "numeric"}
+{"question": "在留期間の更新はいつから申請できますか", "relevant": ["visa/02-renewal.ja.md", "visa/02-renewal.md"], "lang": "ja", "type": "numeric"}

@@ -1,6 +1,7 @@
 ---
 doc_title: Japan Income Tax Brackets and Rates
 source_url: https://www.nta.go.jp/english/taxes/individual/incometax.htm
+language: en
 last_updated: 2025-01-15
 ---
 

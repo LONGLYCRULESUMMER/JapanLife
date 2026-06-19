@@ -1,6 +1,7 @@
 ---
 doc_title: Year-End Adjustment Guide
 source_url: https://www.nta.go.jp/english/taxes/individual/yearend.htm
+language: en
 last_updated: 2025-01-15
 ---
 

@@ -39,7 +39,7 @@ Sources: [1] 04-furusato-nozei …  [2] 03-deductions-guide …
 - **Backend engineering** — config-gated embedding + retrieval caches (swappable for Redis)
   and background ingest jobs with a thread-safe registry. See
   [`docs/backend-engineering.md`](docs/backend-engineering.md).
-- **Two-axis evaluation** — retrieval eval (Recall@5 / MRR over 66 cases) **and** answer eval
+- **Two-axis evaluation** — retrieval eval (Recall@5 / MRR over 95 cases) **and** answer eval
   (citation grounding, disclaimer, language, routing), runnable offline. See
   [`docs/rag-evaluation.md`](docs/rag-evaluation.md).
 - **One command to run** — `docker compose up` starts ElasticSearch, Qdrant, and the API.
@@ -169,7 +169,7 @@ JapanLife measures two different things (full design in
 [`docs/rag-evaluation.md`](docs/rag-evaluation.md), results in
 [`docs/eval-report.md`](docs/eval-report.md)):
 
-- **Retrieval eval** (`make eval`) — Recall@5 / MRR over **66 cases** (22 per domain, EN/JA/
+- **Retrieval eval** (`make eval`) — Recall@5 / MRR over **95 cases** (≥31 per domain, EN/JA/
   mixed, keyword/semantic/numeric/cross-domain/confusing), comparing `es_only`, `qdrant_only`,
   and `hybrid` (RRF + rerank).
 - **Answer eval** (`make answer-eval` / `make answer-eval-stub`) — scores the agent's answers:
@@ -214,7 +214,7 @@ rag/         chunking, embeddings, es_store, qdrant_store, hybrid (RRF), rerank,
 tools/       tax / visa / ward_office calculators + domain-scoped knowledge tool
 agents/      state, prompts, supervisor, handoffs, specialists/, graph, output
 app/         FastAPI: schemas, routes (/chat, /chat/stream, /search, /health, /admin/ingest), jobs, main (lifespan)
-knowledge/   bilingual markdown knowledge base (tax / visa / ward_office), front-matter w/ source_url
+knowledge/   bilingual (EN + native JA) markdown knowledge base — 50 docs across tax / visa / ward_office, front-matter w/ source_url
 eval/        retrieval eval (recall@k, MRR) + answer eval (metrics + runner) + datasets
 docs/        architecture, rag-evaluation, backend-engineering, eval-report
 docker/      custom ElasticSearch image (kuromoji)

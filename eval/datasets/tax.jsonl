@@ -20,3 +20,14 @@
 {"question": "How is resident tax calculated and when do I pay it?", "relevant": ["tax/08-resident-tax.md", "tax/02-income-tax-brackets.md"], "lang": "en", "type": "confusing"}
 {"question": "今年日本に来たばかりでも住民税を払う必要がありますか", "relevant": ["tax/08-resident-tax.md"], "lang": "ja", "type": "semantic"}
 {"question": "What is the difference between special collection and ordinary collection of resident tax?", "relevant": ["tax/08-resident-tax.md"], "lang": "en", "type": "keyword"}
+{"question": "What is the consumption tax rate in Japan?", "relevant": ["tax/09-consumption-tax.md"], "lang": "en", "type": "keyword"}
+{"question": "テイクアウトと店内飲食で消費税率は違いますか", "relevant": ["tax/09-consumption-tax.md"], "lang": "ja", "type": "numeric"}
+{"question": "How much is the dependent deduction worth?", "relevant": ["tax/10-dependents-deductions.md"], "lang": "en", "type": "numeric"}
+{"question": "扶養に入れる年収の上限はいくらですか", "relevant": ["tax/10-dependents-deductions.md"], "lang": "ja", "type": "numeric"}
+{"question": "Can I deduct my medical expenses on my tax return?", "relevant": ["tax/11-medical-expense-deduction.md"], "lang": "en", "type": "semantic"}
+{"question": "医療費控除は年末調整でできますか", "relevant": ["tax/11-medical-expense-deduction.md", "tax/05-year-end-adjustment.md"], "lang": "ja", "type": "confusing"}
+{"question": "I am a non-permanent resident, is my foreign income taxed?", "relevant": ["tax/12-tax-treaty-foreign-income.md"], "lang": "en", "type": "semantic"}
+{"question": "What happens to my resident tax if I leave Japan mid-year?", "relevant": ["tax/13-leaving-japan-tax.md", "tax/08-resident-tax.md"], "lang": "en", "type": "cross"}
+{"question": "確定申告の期間を教えてください", "relevant": ["tax/01-tax-filing-overview.ja.md", "tax/01-tax-filing-overview.md"], "lang": "ja", "type": "semantic"}
+{"question": "ふるさと納税の自己負担はいくらですか", "relevant": ["tax/04-furusato-nozei.ja.md", "tax/04-furusato-nozei.md"], "lang": "ja", "type": "numeric"}
+{"question": "住民税はいつの所得を基準に計算されますか", "relevant": ["tax/08-resident-tax.ja.md", "tax/08-resident-tax.md"], "lang": "ja", "type": "semantic"}
