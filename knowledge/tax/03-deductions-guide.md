@@ -1,6 +1,7 @@
 ---
 doc_title: Tax Deductions Guide for Foreign Residents
 source_url: https://www.nta.go.jp/english/taxes/individual/deductions.htm
+language: en
 last_updated: 2025-01-15
 ---
 

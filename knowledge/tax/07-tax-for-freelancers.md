@@ -1,6 +1,7 @@
 ---
 doc_title: Tax Guide for Freelancers and Self-Employed
 source_url: https://www.nta.go.jp/english/taxes/individual/self-employed.htm
+language: en
 last_updated: 2025-01-15
 ---
 

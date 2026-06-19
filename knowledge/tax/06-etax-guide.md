@@ -1,6 +1,7 @@
 ---
 doc_title: e-Tax Online Filing Guide
 source_url: https://www.e-tax.nta.go.jp/english/index.htm
+language: en
 last_updated: 2025-01-15
 ---
 
