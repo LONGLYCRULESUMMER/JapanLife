@@ -1,6 +1,6 @@
 ---
 doc_title: 引越し年の住民税
-source_url: https://www.soumu.go.jp/main_sosiki/jichi_zeisei/czaisei/czaisei_seido/kojin.html
+source_url: https://www.tax.metro.tokyo.lg.jp/english/
 language: ja
 last_updated: 2026-06-23
 ---

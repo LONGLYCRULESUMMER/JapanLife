@@ -1,6 +1,6 @@
 ---
 doc_title: Social Insurance and Tax
-source_url: https://www.mhlw.go.jp/english/
+source_url: https://www.nenkin.go.jp/international/index.html
 language: en
 last_updated: 2026-06-23
 ---
