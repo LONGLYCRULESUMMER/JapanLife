@@ -1,6 +1,6 @@
 ---
 doc_title: Permanent Residency Failure Reasons
-source_url: https://www.moj.go.jp/isa/applications/procedures/nyuukokukanri10_00015.html
+source_url: https://www.moj.go.jp/isa/applications/procedures/16-4.html
 language: en
 last_updated: 2026-06-23
 ---

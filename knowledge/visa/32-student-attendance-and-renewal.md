@@ -1,6 +1,6 @@
 ---
 doc_title: Student Attendance and Renewal
-source_url: https://www.moj.go.jp/isa/applications/procedures/nyuukokukanri10_00011.html
+source_url: https://www.moj.go.jp/isa/applications/procedures/16-3.html
 language: en
 last_updated: 2026-06-23
 ---
