@@ -1,6 +1,6 @@
 ---
 doc_title: Death Registration
-source_url: https://www.moj.go.jp/EN/MINJI/minji15.html
+source_url: https://www.foreign.city.shinjuku.lg.jp/en/kurashi/koseki/
 language: en
 last_updated: 2026-06-23
 ---

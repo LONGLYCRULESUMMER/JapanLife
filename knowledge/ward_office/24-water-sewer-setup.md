@@ -1,6 +1,6 @@
 ---
 doc_title: Water and Sewer Setup
-source_url: https://www.waterworks.metro.tokyo.lg.jp/eng/
+source_url: https://www.waterworks.metro.tokyo.lg.jp/
 language: en
 last_updated: 2026-06-23
 ---

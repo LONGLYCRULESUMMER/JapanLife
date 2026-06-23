@@ -1,6 +1,6 @@
 ---
 doc_title: National Health Insurance Reduction and Exemption
-source_url: https://www.mhlw.go.jp/english/policy/health/health-insurance/index.html
+source_url: https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/iryouhoken/iryouhoken01/index.html
 language: en
 last_updated: 2026-06-23
 ---

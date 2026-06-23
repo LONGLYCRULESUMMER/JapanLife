@@ -1,6 +1,6 @@
 ---
 doc_title: Disability Certificate Overview
-source_url: https://www.mhlw.go.jp/english/policy/care-welfare/index.html
+source_url: https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/hukushi_kaigo/shougaishahukushi/techou.html
 language: en
 last_updated: 2026-06-23
 ---

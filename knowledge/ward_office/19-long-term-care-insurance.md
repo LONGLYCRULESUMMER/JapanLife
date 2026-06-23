@@ -1,6 +1,6 @@
 ---
 doc_title: Long-Term Care Insurance Overview
-source_url: https://www.mhlw.go.jp/english/policy/care-welfare/care-welfare-elderly/index.html
+source_url: https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/hukushi_kaigo/kaigo_koureisha/index.html
 language: en
 last_updated: 2026-06-23
 ---
