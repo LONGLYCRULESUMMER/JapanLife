@@ -21,3 +21,4 @@ dist/
 
 # superpowers brainstorming artifacts
 .superpowers/
+.worktrees/
