@@ -1,6 +1,6 @@
 ---
 doc_title: ふるさと納税ガイド
-source_url: https://www.soumu.go.jp/main_sosiki/jichi_zeisei/czaisei/czaisei_seido/furusato/
+source_url: https://www.soumu.go.jp/main_sosiki/jichi_zeisei/czaisei/czaisei_seido/furusato/about/
 language: ja
 last_updated: 2025-06-01
 ---

@@ -1,6 +1,6 @@
 ---
 doc_title: Furusato Nozei Guide for Foreigners
-source_url: https://www.soumu.go.jp/main_sosiki/jichi_zeisei/czaisei/czaisei_seido/furusato/
+source_url: https://www.soumu.go.jp/main_sosiki/jichi_zeisei/czaisei/czaisei_seido/furusato/about/
 language: en
 last_updated: 2025-01-15
 ---

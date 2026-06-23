@@ -1,6 +1,6 @@
 ---
 doc_title: Health Checkups and Vaccinations
-source_url: https://www.mhlw.go.jp/english/
+source_url: https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/kenkou/kekkaku-kansenshou/yobou-sesshu/index.html
 language: en
 last_updated: 2025-06-01
 ---
