@@ -31,8 +31,8 @@ The two are intentionally decoupled. Retrieval can be perfect while the answer i
 - `type` — `keyword` / `semantic` / `numeric` / `cross` / `confusing`. Used for composition
   reporting and to make sure the suite isn't all easy keyword lookups.
 
-The suite currently has **66 cases** (22 per domain). `run_eval.py` loads the three domain
-files **by name** (not a glob), so adding other datasets — like `answer_cases.jsonl` — to
+The suite currently has **190 cases** (tax 64, visa 63, ward_office 63). `run_eval.py` loads
+the three domain files **by name** (not a glob), so adding other datasets — like `answer_cases.jsonl` — to
 `eval/datasets/` never pollutes retrieval scoring.
 
 ### Metrics (`eval/metrics.py`)
@@ -100,12 +100,12 @@ make answer-eval               # real agent (needs DEEPSEEK_API_KEY + ingested s
 Example offline output:
 
 ```
-=== Answer evaluation (stub) — 15 cases ===
+=== Answer evaluation (stub) — 46 cases ===
   citation_present       1.000
   citation_supported     1.000
   refusal_or_disclaimer  1.000
   language_match         1.000
-  route_correct          0.933
+  route_correct          0.870
   disclaimer_compliance  1.000
 ```
 

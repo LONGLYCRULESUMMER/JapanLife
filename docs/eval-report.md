@@ -6,14 +6,15 @@ the full design; this page records the latest results.
 
 ## Corpus & datasets
 
-- **Knowledge base**: 26 documents (tax 8, visa 9, ward_office 9) → ~156 chunks after
-  header-aware chunking. All documents carry YAML front-matter with a real official
-  `source_url` (ISA, NTA, MHLW, Soumu, Japan Pension Service) and a demo disclaimer.
-- **Retrieval eval set**: **66 cases** (22 per domain) in `eval/datasets/{domain}.jsonl`.
+- **Knowledge base**: 144 documents (tax 47, visa 48, ward_office 49; 33 native-Japanese docs)
+  → 793 chunks after header-aware chunking. All documents carry front-matter with a real official
+  or municipal `source_url` (ISA, NTA, MHLW, Soumu, Japan Pension Service, city sources, etc.).
+- **Retrieval eval set**: **190 cases** (tax 64, visa 63, ward_office 63) in
+  `eval/datasets/{domain}.jsonl`.
   Composition:
-  - by language — en 37, ja 27, mixed 2
-  - by type — numeric 21, semantic 21, keyword 14, confusing 6, cross-domain 4
-- **Answer eval set**: 15 cases in `eval/datasets/answer_cases.jsonl` (with `expected_route`
+  - by language — en 120, ja 67, mixed 3
+  - by type — semantic 62, numeric 44, keyword 43, cross-domain 21, confusing 20
+- **Answer eval set**: 46 cases in `eval/datasets/answer_cases.jsonl` (with `expected_route`
   and `expects_disclaimer`).
 
 ## Retrieval eval
@@ -38,7 +39,7 @@ retained for reference:
 | qdrant_only (BGE-m3 dense) | 1.000 | 1.000 |
 | **hybrid (RRF + rerank)** | **1.000** | **0.929** |
 
-> NOTE: These predate the corpus/dataset expansion (26 docs, 66 cases). They are **not**
+> NOTE: These predate the current corpus/dataset expansion (144 docs, 190 cases). They are **not**
 > re-stated for the new corpus because regenerating them requires running ES + Qdrant and
 > downloading the embedding/reranker models, which isn't done in CI. To regenerate on the
 > current corpus:
@@ -56,7 +57,7 @@ On a small, semantically straightforward corpus every method already retrieves t
 document within the top 5, and dense retrieval saturates rank-1, so **hybrid does not beat
 strong dense retrieval here**. The value of hybrid + BM25/kuromoji shows up at scale and on
 rare-term / exact-match queries (proper nouns, numbers, specific Japanese terms such as
-確定申告 or マイナンバー). The expanded 66-case set deliberately adds numeric, cross-domain,
+確定申告 or マイナンバー). The expanded 190-case set deliberately adds numeric, cross-domain,
 and confusable queries so this effect has room to appear as the corpus grows.
 
 ## Answer eval
@@ -64,7 +65,7 @@ and confusable queries so this effect has room to appear as the corpus grows.
 Method (`eval/run_answer_eval.py`). Real-agent mode needs `DEEPSEEK_API_KEY` + ingested
 stores; the offline `--stub` mode exercises the full metric pipeline with no key or services.
 
-Offline stub run (`make answer-eval-stub`, 15 cases) — demonstrates the metrics, not model
+Offline stub run (`make answer-eval-stub`, 46 cases) — demonstrates the metrics, not model
 quality:
 
 | Metric | Rate |
@@ -73,11 +74,11 @@ quality:
 | citation_supported | 1.000 |
 | refusal_or_disclaimer | 1.000 |
 | language_match | 1.000 |
-| route_correct | 0.933 |
+| route_correct | 0.870 |
 | disclaimer_compliance | 1.000 |
 
-`route_correct = 0.933` (14/15) is expected: the stub's tiny keyword router mis-routes one
-case. That the number is below 1.0 is the point — it shows the metric discriminating. To run
+`route_correct = 0.870` is expected: the stub's tiny keyword router is intentionally simple and
+mis-routes several expanded cases. That the number is below 1.0 is the point — it shows the metric discriminating. To run
 the **real** agent instead:
 
 ```bash
