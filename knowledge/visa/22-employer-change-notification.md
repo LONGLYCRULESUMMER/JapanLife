@@ -1,6 +1,6 @@
 ---
 doc_title: Employer Change Notification
-source_url: https://www.moj.go.jp/isa/applications/procedures/nyuukokukanri10_00014.html
+source_url: https://www.moj.go.jp/isa/applications/procedures/16-8.html
 language: en
 last_updated: 2026-06-23
 ---

@@ -1,6 +1,6 @@
 ---
 doc_title: Highly Skilled Professional Point Examples
-source_url: https://www.moj.go.jp/isa/publications/materials/newimmiact_3_index.html
+source_url: https://www.moj.go.jp/isa/applications/status/index.html
 language: en
 last_updated: 2026-06-23
 ---

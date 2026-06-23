@@ -1,6 +1,6 @@
 ---
 doc_title: Certificate of Eligibility Process
-source_url: https://www.moj.go.jp/isa/applications/procedures/16-1.html
+source_url: https://www.moj.go.jp/isa/applications/procedures/index.html
 language: en
 last_updated: 2026-06-23
 ---

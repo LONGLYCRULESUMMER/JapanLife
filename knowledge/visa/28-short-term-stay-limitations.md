@@ -1,6 +1,6 @@
 ---
 doc_title: Short-term Stay Limitations
-source_url: https://www.moj.go.jp/isa/applications/status/shorttermstay.html
+source_url: https://www.moj.go.jp/isa/applications/status/index.html
 language: en
 last_updated: 2026-06-23
 ---

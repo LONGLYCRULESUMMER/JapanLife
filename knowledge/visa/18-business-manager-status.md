@@ -1,6 +1,6 @@
 ---
 doc_title: Business Manager Status
-source_url: https://www.moj.go.jp/isa/applications/status/businessmanager.html
+source_url: https://www.moj.go.jp/isa/applications/status/index.html
 language: en
 last_updated: 2026-06-23
 ---
