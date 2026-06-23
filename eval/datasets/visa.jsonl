@@ -29,3 +29,35 @@
 {"question": "在留資格の種類にはどんなものがありますか", "relevant": ["visa/01-visa-types.ja.md", "visa/01-visa-types.md"], "lang": "ja", "type": "semantic"}
 {"question": "永住許可の要件は何年の在留ですか", "relevant": ["visa/04-permanent-residency.ja.md", "visa/04-permanent-residency.md"], "lang": "ja", "type": "numeric"}
 {"question": "在留期間の更新はいつから申請できますか", "relevant": ["visa/02-renewal.ja.md", "visa/02-renewal.md"], "lang": "ja", "type": "numeric"}
+{"question": "Which work visa covers engineers, translators, and international services?", "relevant": ["visa/15-engineer-humanities-international-services.md", "visa/01-visa-types.md"], "lang": "en", "type": "keyword"}
+{"question": "Who can use the intra-company transferee residence status?", "relevant": ["visa/16-intra-company-transferee.md"], "lang": "en", "type": "semantic"}
+{"question": "What is the Specified Skilled Worker visa used for?", "relevant": ["visa/17-specified-skilled-worker.md"], "lang": "en", "type": "keyword"}
+{"question": "What does immigration look for in a Business Manager status application?", "relevant": ["visa/18-business-manager-status.md"], "lang": "en", "type": "semantic"}
+{"question": "Can a startup visa help before getting Business Manager status?", "relevant": ["visa/19-startup-visa-overview.md", "visa/18-business-manager-status.md"], "lang": "en", "type": "cross"}
+{"question": "What is a Certificate of Eligibility for coming to Japan?", "relevant": ["visa/20-certificate-of-eligibility.md"], "lang": "en", "type": "keyword"}
+{"question": "What documents should I prepare for a visa renewal?", "relevant": ["visa/21-renewal-document-preparation.md", "visa/02-renewal.md"], "lang": "en", "type": "cross"}
+{"question": "Do I need to notify immigration after changing employers?", "relevant": ["visa/22-employer-change-notification.md", "visa/14-status-change-notifications.md"], "lang": "en", "type": "semantic"}
+{"question": "Do I need permission for side work outside my visa status?", "relevant": ["visa/23-side-work-permission.md"], "lang": "en", "type": "semantic"}
+{"question": "Can a family stay dependent work part-time in Japan?", "relevant": ["visa/24-family-stay-details.md", "visa/23-side-work-permission.md"], "lang": "en", "type": "confusing"}
+{"question": "What should I do about spouse status after divorce?", "relevant": ["visa/25-spouse-status-after-divorce.md", "visa/12-spouse-of-japanese.md"], "lang": "en", "type": "cross"}
+{"question": "Why are permanent residency applications denied for tax or pension issues?", "relevant": ["visa/26-pr-failure-reasons.md", "visa/04-permanent-residency.md"], "lang": "en", "type": "confusing"}
+{"question": "How do Highly Skilled Professional point examples work?", "relevant": ["visa/27-hsp-points-examples.md", "visa/10-highly-skilled-professional.md"], "lang": "en", "type": "numeric"}
+{"question": "Can I work remotely while on a short-term stay in Japan?", "relevant": ["visa/28-short-term-stay-limitations.md"], "lang": "en", "type": "semantic"}
+{"question": "What is special permission to stay after an overstay?", "relevant": ["visa/29-overstay-and-special-permission.md"], "lang": "en", "type": "keyword"}
+{"question": "How do I check whether a new job fits my current work visa?", "relevant": ["visa/30-changing-jobs-on-work-visa.md", "visa/15-engineer-humanities-international-services.md"], "lang": "en", "type": "confusing"}
+{"question": "Can I live in Japan while working remotely for a foreign employer?", "relevant": ["visa/31-remote-work-for-foreign-employers.md"], "lang": "en", "type": "semantic"}
+{"question": "Will poor school attendance affect my student visa renewal?", "relevant": ["visa/32-student-attendance-and-renewal.md", "visa/07-student-and-work-visa.md"], "lang": "en", "type": "semantic"}
+{"question": "What visa and school documents matter for a dependent child?", "relevant": ["visa/33-dependent-child-schooling.md", "ward_office/22-school-enrollment-children.md"], "lang": "en", "type": "cross"}
+{"question": "Who may qualify for long-term resident status?", "relevant": ["visa/34-long-term-resident-status.md"], "lang": "en", "type": "keyword"}
+{"question": "What kinds of cases use Designated Activities status?", "relevant": ["visa/35-designated-activities-overview.md"], "lang": "en", "type": "semantic"}
+{"question": "Can I stay while my visa application is pending after expiry?", "relevant": ["visa/36-application-status-and-special-period.md", "visa/09-applications-faq.md"], "lang": "en", "type": "numeric"}
+{"question": "Where can I ask immigration questions before applying?", "relevant": ["visa/37-immigration-consultation.md"], "lang": "en", "type": "keyword"}
+{"question": "技術・人文知識・国際業務ビザはどんな仕事が対象ですか", "relevant": ["visa/15-engineer-humanities-international-services.ja.md", "visa/15-engineer-humanities-international-services.md"], "lang": "ja", "type": "keyword"}
+{"question": "在留資格認定証明書 COE は何のために使いますか", "relevant": ["visa/20-certificate-of-eligibility.ja.md", "visa/20-certificate-of-eligibility.md"], "lang": "ja", "type": "keyword"}
+{"question": "在留期間更新の書類はいつ頃から準備しますか", "relevant": ["visa/21-renewal-document-preparation.ja.md", "visa/21-renewal-document-preparation.md"], "lang": "ja", "type": "semantic"}
+{"question": "転職したら所属機関の変更届は必要ですか", "relevant": ["visa/22-employer-change-notification.ja.md", "visa/22-employer-change-notification.md"], "lang": "ja", "type": "semantic"}
+{"question": "副業を始める前に資格外活動許可を取る必要がありますか", "relevant": ["visa/23-side-work-permission.ja.md", "visa/23-side-work-permission.md"], "lang": "ja", "type": "confusing"}
+{"question": "永住申請が不許可になる税金や年金の理由は何ですか", "relevant": ["visa/26-pr-failure-reasons.ja.md", "visa/26-pr-failure-reasons.md"], "lang": "ja", "type": "cross"}
+{"question": "就労ビザで転職するとき在留資格との関連性はどう確認しますか", "relevant": ["visa/30-changing-jobs-on-work-visa.ja.md", "visa/30-changing-jobs-on-work-visa.md"], "lang": "ja", "type": "semantic"}
+{"question": "申請中に在留期限が来た場合の特例期間はどうなりますか", "relevant": ["visa/36-application-status-and-special-period.ja.md", "visa/36-application-status-and-special-period.md"], "lang": "ja", "type": "numeric"}
+{"question": "COE applicationの進捗はimmigrationに相談できますか", "relevant": ["visa/20-certificate-of-eligibility.md", "visa/37-immigration-consultation.md"], "lang": "mixed", "type": "cross"}

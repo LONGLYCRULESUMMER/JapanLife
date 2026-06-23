@@ -31,3 +31,34 @@
 {"question": "確定申告の期間を教えてください", "relevant": ["tax/01-tax-filing-overview.ja.md", "tax/01-tax-filing-overview.md"], "lang": "ja", "type": "semantic"}
 {"question": "ふるさと納税の自己負担はいくらですか", "relevant": ["tax/04-furusato-nozei.ja.md", "tax/04-furusato-nozei.md"], "lang": "ja", "type": "numeric"}
 {"question": "住民税はいつの所得を基準に計算されますか", "relevant": ["tax/08-resident-tax.ja.md", "tax/08-resident-tax.md"], "lang": "ja", "type": "semantic"}
+{"question": "How do withholding and year-end adjustment work for salary income?", "relevant": ["tax/14-employment-income-withholding.md", "tax/05-year-end-adjustment.md"], "lang": "en", "type": "cross"}
+{"question": "Is my side gig salary income or business income for taxes?", "relevant": ["tax/15-salary-vs-business-income.md"], "lang": "en", "type": "confusing"}
+{"question": "What are the benefits and requirements of a blue return?", "relevant": ["tax/16-blue-return-details.md", "tax/07-tax-for-freelancers.md"], "lang": "en", "type": "semantic"}
+{"question": "What bookkeeping records should freelancers keep for tax filing?", "relevant": ["tax/17-freelance-bookkeeping.md"], "lang": "en", "type": "keyword"}
+{"question": "Should a freelancer register as a qualified invoice issuer?", "relevant": ["tax/18-invoice-system-freelancers.md", "tax/09-consumption-tax.md"], "lang": "en", "type": "cross"}
+{"question": "Can I pay national tax by credit card or convenience store?", "relevant": ["tax/19-tax-payment-methods.md"], "lang": "en", "type": "keyword"}
+{"question": "What penalties apply if I file my tax return late?", "relevant": ["tax/20-late-filing-penalties.md"], "lang": "en", "type": "semantic"}
+{"question": "What documents prove an overseas dependent for tax deductions?", "relevant": ["tax/21-overseas-dependent-documents.md", "tax/10-dependents-deductions.md"], "lang": "en", "type": "cross"}
+{"question": "Do I need a final tax return for the first year of the housing loan deduction?", "relevant": ["tax/22-housing-loan-deduction.md"], "lang": "en", "type": "semantic"}
+{"question": "How are donation deductions different from furusato nozei?", "relevant": ["tax/23-donation-deductions.md", "tax/04-furusato-nozei.md"], "lang": "en", "type": "confusing"}
+{"question": "Is NISA a tax deduction or a tax-free investment account?", "relevant": ["tax/24-nisa-overview.md"], "lang": "en", "type": "confusing"}
+{"question": "Do iDeCo contributions reduce taxable income?", "relevant": ["tax/25-ideco-overview.md"], "lang": "en", "type": "semantic"}
+{"question": "When are crypto trades taxable in Japan?", "relevant": ["tax/26-crypto-tax-overview.md"], "lang": "en", "type": "keyword"}
+{"question": "How are stock capital gains taxed when using a foreign broker?", "relevant": ["tax/27-stock-capital-gains.md"], "lang": "en", "type": "semantic"}
+{"question": "How can I reclaim tax withheld from a pension lump-sum withdrawal?", "relevant": ["tax/28-pension-lump-sum-tax-reclaim.md"], "lang": "en", "type": "keyword"}
+{"question": "Which city bills resident tax if I moved after January 1?", "relevant": ["tax/29-resident-tax-moving-year.md", "tax/08-resident-tax.md"], "lang": "en", "type": "numeric"}
+{"question": "Where can I request income and tax payment certificates?", "relevant": ["tax/30-tax-certificates.md", "ward_office/12-certificates.md"], "lang": "en", "type": "cross"}
+{"question": "What documents do I need before filing a final tax return?", "relevant": ["tax/31-documents-for-final-return.md"], "lang": "en", "type": "keyword"}
+{"question": "How do I correct a mistake on a submitted tax return?", "relevant": ["tax/32-correction-amended-return.md"], "lang": "en", "type": "semantic"}
+{"question": "What should I bring to a tax office consultation?", "relevant": ["tax/33-tax-office-consultation.md"], "lang": "en", "type": "keyword"}
+{"question": "What common tax mistakes do foreign residents make in Japan?", "relevant": ["tax/34-common-tax-mistakes.md"], "lang": "en", "type": "semantic"}
+{"question": "How are social insurance income walls different from tax deductions?", "relevant": ["tax/35-social-insurance-and-tax.md", "ward_office/05-national-health-insurance.md"], "lang": "en", "type": "confusing"}
+{"question": "What tax deadlines should I remember from January through December?", "relevant": ["tax/36-tax-calendar.md"], "lang": "en", "type": "numeric"}
+{"question": "給与の源泉徴収と年末調整はどう違いますか", "relevant": ["tax/14-employment-income-withholding.ja.md", "tax/14-employment-income-withholding.md"], "lang": "ja", "type": "confusing"}
+{"question": "青色申告の承認申請はいつまでに出しますか", "relevant": ["tax/16-blue-return-details.ja.md", "tax/16-blue-return-details.md"], "lang": "ja", "type": "numeric"}
+{"question": "フリーランスがインボイス登録を検討するのはどんな時ですか", "relevant": ["tax/18-invoice-system-freelancers.ja.md", "tax/18-invoice-system-freelancers.md"], "lang": "ja", "type": "semantic"}
+{"question": "海外扶養親族の控除には送金書類が必要ですか", "relevant": ["tax/21-overseas-dependent-documents.ja.md", "tax/21-overseas-dependent-documents.md"], "lang": "ja", "type": "keyword"}
+{"question": "脱退一時金の源泉税を還付してもらうには何が必要ですか", "relevant": ["tax/28-pension-lump-sum-tax-reclaim.ja.md", "tax/28-pension-lump-sum-tax-reclaim.md"], "lang": "ja", "type": "semantic"}
+{"question": "1月1日後に引っ越した場合の住民税はどこに払いますか", "relevant": ["tax/29-resident-tax-moving-year.ja.md", "tax/29-resident-tax-moving-year.md"], "lang": "ja", "type": "numeric"}
+{"question": "確定申告の前に準備する書類を教えてください", "relevant": ["tax/31-documents-for-final-return.ja.md", "tax/31-documents-for-final-return.md"], "lang": "ja", "type": "keyword"}
+{"question": "税金カレンダーで年末調整と住民税の時期を確認したい", "relevant": ["tax/36-tax-calendar.ja.md", "tax/36-tax-calendar.md"], "lang": "ja", "type": "cross"}

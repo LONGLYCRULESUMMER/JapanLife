@@ -23,3 +23,24 @@
 {"question": "外国の運転免許を切り替えるには何が必要ですか", "expected_route": "ward_office", "expects_disclaimer": false, "lang": "ja"}
 {"question": "What should I prepare for an earthquake?", "expected_route": "ward_office", "expects_disclaimer": false, "lang": "en"}
 {"question": "I am leaving Japan, what should I do about resident tax?", "expected_route": ["tax", "ward_office"], "expects_disclaimer": true, "lang": "en"}
+{"question": "How does tax withholding and year-end adjustment work for salary income?", "expected_route": "tax", "expects_disclaimer": true, "lang": "en"}
+{"question": "青色申告の65万円控除を受けるには何が必要ですか", "expected_route": "tax", "expects_disclaimer": true, "lang": "ja"}
+{"question": "Are crypto gains treated as taxable income in Japan?", "expected_route": "tax", "expects_disclaimer": true, "lang": "en"}
+{"question": "Do iDeCo contributions reduce my taxable income?", "expected_route": "tax", "expects_disclaimer": true, "lang": "en"}
+{"question": "海外扶養親族の控除に送金書類は必要ですか", "expected_route": "tax", "expects_disclaimer": true, "lang": "ja"}
+{"question": "What tax documents should I prepare for a final return?", "expected_route": "tax", "expects_disclaimer": true, "lang": "en"}
+{"question": "What is a Certificate of Eligibility for a work visa?", "expected_route": "visa", "expects_disclaimer": true, "lang": "en"}
+{"question": "在留期間更新の書類はいつ準備しますか", "expected_route": "visa", "expects_disclaimer": true, "lang": "ja"}
+{"question": "Do I need an immigration notification when changing employers on a work visa?", "expected_route": "visa", "expects_disclaimer": true, "lang": "en"}
+{"question": "資格外活動許可があれば副業できますか", "expected_route": "visa", "expects_disclaimer": true, "lang": "ja"}
+{"question": "What visa issues can cause permanent residency to be denied?", "expected_route": "visa", "expects_disclaimer": true, "lang": "en"}
+{"question": "Can I stay while my visa application is pending in the special period?", "expected_route": "visa", "expects_disclaimer": true, "lang": "en"}
+{"question": "How does National Health Insurance premium billing work at the ward office?", "expected_route": "ward_office", "expects_disclaimer": true, "lang": "en"}
+{"question": "国民健康保険料の減免は区役所で相談できますか", "expected_route": "ward_office", "expects_disclaimer": true, "lang": "ja"}
+{"question": "Where do I file a same-city address change at the ward office?", "expected_route": "ward_office", "expects_disclaimer": false, "lang": "en"}
+{"question": "出生届は何日以内に区役所へ出して児童手当も手続きしますか", "expected_route": "ward_office", "expects_disclaimer": false, "lang": "ja"}
+{"question": "Can the ward office help with multilingual support for foreign residents?", "expected_route": "ward_office", "expects_disclaimer": false, "lang": "en"}
+{"question": "マイナンバーカード更新はいつ区役所で手続きしますか", "expected_route": "ward_office", "expects_disclaimer": false, "lang": "ja"}
+{"question": "I changed jobs on a work visa; do I need tax or immigration notifications?", "expected_route": ["tax", "visa"], "expects_disclaimer": true, "lang": "en"}
+{"question": "日本を出国するとき住民税と在留カードと区役所の手続きは何ですか", "expected_route": ["tax", "visa", "ward_office"], "expects_disclaimer": true, "lang": "ja"}
+{"question": "Do I need a My Number card from the ward office to file tax through e-Tax?", "expected_route": ["tax", "ward_office"], "expects_disclaimer": true, "lang": "en"}
