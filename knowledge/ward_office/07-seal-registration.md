@@ -1,6 +1,6 @@
 ---
 doc_title: Seal Registration Guide
-source_url: https://www.soumu.go.jp/main_sosiki/jichi_gyousei/c-gyousei/main.html
+source_url: https://www.soumu.go.jp/main_sosiki/jichi_gyousei/c-gyousei/
 language: en
 last_updated: 2025-06-01
 ---

@@ -1,6 +1,6 @@
 ---
 doc_title: Municipal Bills - Resident Tax and Insurance at the Ward Office
-source_url: https://www.soumu.go.jp/main_sosiki/jichi_zeisei/czaisei/czaisei_seido/kojin/kojin.html
+source_url: https://www.tax.metro.tokyo.lg.jp/english/
 language: en
 last_updated: 2025-06-01
 ---

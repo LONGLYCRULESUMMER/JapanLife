@@ -1,6 +1,6 @@
 ---
 doc_title: Resident Tax Guide
-source_url: https://www.tax.metro.tokyo.lg.jp/kazei/life.html
+source_url: https://www.tax.metro.tokyo.lg.jp/english/
 language: en
 last_updated: 2025-06-01
 ---

@@ -1,6 +1,6 @@
 ---
 doc_title: Residence Card Procedures
-source_url: https://www.moj.go.jp/isa/applications/residency/index.html
+source_url: https://www.moj.go.jp/isa/applications/procedures/nyuukokukanri10_00010.html
 language: en
 last_updated: 2025-06-01
 ---

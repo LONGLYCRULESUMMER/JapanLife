@@ -110,7 +110,7 @@ Example offline output:
 ```
 
 The stub is intentionally well-behaved on most metrics; `route_correct < 1.0` shows the
-metric discriminating (its keyword router mis-routes one case), which is the point — the
+metric discriminating (its keyword router mis-routes several expanded cases), which is the point — the
 harness, not the stub, is what's being demonstrated.
 
 ## Extending the datasets

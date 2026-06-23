@@ -1,6 +1,6 @@
 ---
 doc_title: 住民税ガイド
-source_url: https://www.soumu.go.jp/main_sosiki/jichi_zeisei/czaisei/czaisei_seido/kojin.html
+source_url: https://www.tax.metro.tokyo.lg.jp/english/
 language: ja
 last_updated: 2025-06-01
 ---

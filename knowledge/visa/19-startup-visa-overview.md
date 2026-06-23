@@ -1,6 +1,6 @@
 ---
 doc_title: Startup Visa Overview
-source_url: https://www.meti.go.jp/english/policy/economy/startup_nbp/
+source_url: https://www.jetro.go.jp/en/invest/setting_up/section2/page8.html
 language: en
 last_updated: 2026-06-23
 ---

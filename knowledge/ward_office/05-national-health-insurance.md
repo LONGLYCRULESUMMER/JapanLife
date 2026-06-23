@@ -1,6 +1,6 @@
 ---
 doc_title: National Health Insurance Guide
-source_url: https://www.mhlw.go.jp/english/policy/health/health-insurance/index.html
+source_url: https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/iryouhoken/iryouhoken01/index.html
 language: en
 last_updated: 2025-06-01
 ---

@@ -1,6 +1,6 @@
 ---
 doc_title: Re-entry Permit Guide
-source_url: https://www.moj.go.jp/isa/publications/materials/nyuukokukanri07_00078.html
+source_url: https://www.moj.go.jp/isa/immigration/procedures/16-5.html
 language: en
 last_updated: 2025-06-01
 ---
