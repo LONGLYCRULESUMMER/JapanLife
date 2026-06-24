@@ -1,22 +1,8 @@
 import { ArrowUpRight, Database, GitBranch, ShieldCheck } from "@phosphor-icons/react/dist/ssr";
+import Image from "next/image";
 import { PublicShell } from "@/components/shell/public-shell";
 import { ButtonLink } from "@/components/ui/button";
 import { Panel } from "@/components/ui/panel";
-
-const consoleRows = [
-  {
-    label: "tax",
-    text: "Resident tax, deductions, and filing deadlines",
-  },
-  {
-    label: "visa",
-    text: "Permanent residency evidence and renewal timing",
-  },
-  {
-    label: "ward office",
-    text: "Moving-in forms, address updates, and local steps",
-  },
-];
 
 const proofPoints = [
   {
@@ -59,45 +45,24 @@ export default function HomePage() {
           </div>
         </div>
 
-        <Panel className="relative overflow-hidden p-3 shadow-[0_40px_120px_rgb(0_0_0/0.34)]" variant="elevated">
-          <div className="absolute -right-20 -top-20 size-48 rounded-full bg-[var(--accent)]/12 blur-3xl" aria-hidden="true" />
-          <div className="relative rounded-[calc(var(--radius-card)-0.5rem)] border border-white/10 bg-[#091411] p-4 shadow-[inset_0_1px_0_rgb(255_255_255/0.06)] sm:p-5">
-            <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
-              <div>
-                <p className="font-mono text-xs text-[var(--accent)]">live route console</p>
-                <p className="mt-1 text-sm font-medium text-[#eff8f3]">Question intake and source trace</p>
-              </div>
-              <div className="rounded-full bg-[var(--accent)]/12 px-3 py-1 font-mono text-xs text-[var(--accent)] ring-1 ring-[var(--accent)]/25">
-                ready
-              </div>
-            </div>
-
-            <div className="mt-5 grid gap-3">
-              {consoleRows.map((row, index) => (
-                <div
-                  className={
-                    index === 1
-                      ? "ml-7 rounded-3xl bg-[var(--accent)]/[0.09] p-4 ring-1 ring-[var(--accent)]/20"
-                      : "rounded-3xl bg-white/[0.045] p-4 ring-1 ring-white/10"
-                  }
-                  key={row.label}
-                >
-                  <div className="flex items-center justify-between gap-4">
-                    <p className="font-mono text-xs text-[var(--accent)]">{row.label}</p>
-                    <p className="font-mono text-[11px] text-[var(--text-muted)]">source trace</p>
-                  </div>
-                  <p className="mt-2 text-sm leading-6 text-[#eff8f3]">{row.text}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-5 grid gap-3 rounded-3xl bg-[#0f201b] p-4 ring-1 ring-white/10 sm:grid-cols-[0.8fr_1.2fr]">
-              <div>
-                <p className="font-mono text-xs text-[var(--accent)]">thread</p>
-                <p className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[#eff8f3]">Cited reply</p>
-              </div>
-              <p className="text-sm leading-6 text-[var(--text-muted)]">
-                The assistant streams route, answer text, and citations so users can see how the response was assembled.
+        <Panel className="relative overflow-hidden p-2 shadow-[0_40px_120px_rgb(0_0_0/0.34)]" variant="elevated">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-[calc(var(--radius-card)-0.45rem)] bg-[#091411]">
+            <Image
+              alt="A quiet municipal office desk in Japan with documents prepared for review"
+              className="object-cover opacity-80 saturate-[0.82]"
+              fill
+              priority
+              sizes="(min-width: 1024px) 46vw, 100vw"
+              src="https://picsum.photos/seed/japanlife-municipal-desk/1200/900"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#07110f] via-[#07110f]/25 to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 p-5">
+              <p className="font-mono text-xs text-[var(--accent)]">curated source layer</p>
+              <h2 className="mt-2 max-w-md text-3xl font-semibold tracking-[-0.05em] text-[#eff8f3]">
+                Official paperwork, translated into usable steps.
+              </h2>
+              <p className="mt-3 max-w-[46ch] text-sm leading-6 text-[#c9d8d1]">
+                The assistant retrieves cited chunks from tax, visa, and municipal knowledge before composing an answer.
               </p>
             </div>
           </div>
