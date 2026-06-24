@@ -870,21 +870,23 @@ git commit -m "feat(web): build product chat frontend" -m "Co-authored-by: Copil
 - Create: `tests/test_knowledge_admin_api.py`
 - Create: `tests/test_stale_cleanup.py`
 
-- [ ] **Step 1: Implement backend using the approved knowledge admin service/API plan**
+- [ ] **Step 1: Implement backend using the approved knowledge admin design**
 
-Use the existing committed plan as the backend source of truth:
+Use the approved design as the backend source of truth:
 
 ```text
-docs/superpowers/plans/2026-06-24-knowledge-admin-ui.md
+docs/superpowers/specs/2026-06-24-knowledge-admin-ui-design.md
 ```
 
-Implement its backend tasks only:
+Implement these backend capabilities:
 
 ```text
-Task 1: Knowledge Admin Service
-Task 2: Validation and Chunk Preview
-Task 3: Manifest and Stale Chunk Cleanup
-Task 4: FastAPI Knowledge Admin Routes
+KnowledgeAdminService: safe doc_id path resolution, Markdown parse/render, list/get/create/update/soft-delete.
+Validation: required front-matter, safe filename, language values, Markdown heading, source_url warnings.
+Chunk preview: use existing rag.chunking.chunk_markdown without writing embeddings.
+Manifest: read/write knowledge/.manifest.json and compute stale chunk IDs.
+Stale cleanup: add ESStore.delete_chunks(ids) and QdrantStore.delete(ids).
+FastAPI routes: /admin/knowledge/docs, /admin/knowledge/validate, /admin/knowledge/docs/{domain}/{filename}/chunks, /admin/knowledge/reindex.
 ```
 
 Do not implement its Streamlit task.
@@ -1415,4 +1417,3 @@ git commit -m "docs: document production Next.js frontend" -m "Co-authored-by: C
 **Type consistency:** Frontend types use `Domain`, `KnowledgeDoc`, `KnowledgeDocPayload`, `SearchResult`, and `IngestJob` consistently across API client and UI components.
 
 **Taste-skill compliance:** The plan declares the design read, dials, visual constraints, anti-slop rules, route separation, loading/error/empty states, reduced-motion guardrails, and production UI requirements.
-
