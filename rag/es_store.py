@@ -59,6 +59,16 @@ class ESStore:
         bulk(self.client, actions)
         self.client.indices.refresh(index=self.index)
 
+    def delete_chunks(self, ids: list[str]) -> None:
+        if not ids:
+            return
+        actions = [
+            {"_op_type": "delete", "_index": self.index, "_id": chunk_id}
+            for chunk_id in ids
+        ]
+        bulk(self.client, actions, ignore_status=(404,))
+        self.client.indices.refresh(index=self.index)
+
     def search(
         self, query: str, top_k: int, domain: str | None = None
     ) -> list[tuple[str, float, dict]]:

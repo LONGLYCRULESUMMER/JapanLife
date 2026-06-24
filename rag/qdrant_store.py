@@ -8,6 +8,7 @@ from qdrant_client.models import (
     FieldCondition,
     Filter,
     MatchValue,
+    PointIdsList,
     PointStruct,
     VectorParams,
 )
@@ -41,6 +42,14 @@ class QdrantStore:
             for cid, vec, pl in zip(ids, vectors, payloads)
         ]
         self.client.upsert(collection_name=self.collection, points=points)
+
+    def delete(self, ids: list[str]) -> None:
+        if not ids:
+            return
+        self.client.delete(
+            collection_name=self.collection,
+            points_selector=PointIdsList(points=[point_id(chunk_id) for chunk_id in ids]),
+        )
 
     def search(
         self, vector: list[float], top_k: int, domain: str | None = None

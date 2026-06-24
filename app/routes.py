@@ -3,13 +3,23 @@ from __future__ import annotations
 import json
 import logging
 import uuid
+from pathlib import Path
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
 from langchain_core.messages import AIMessageChunk, HumanMessage, ToolMessage
 from sse_starlette.sse import EventSourceResponse
 
 from agents.output import extract_citations, extract_reply, reconstruct_messages
-from app.schemas import ChatRequest, ChatResponse
+from app.knowledge_admin import KnowledgeAdminService
+from app.schemas import (
+    ChatRequest,
+    ChatResponse,
+    ChunkPreviewResponse,
+    KnowledgeDocListResponse,
+    KnowledgeDocRequest,
+    KnowledgeDocResponse,
+    KnowledgeValidationResponse,
+)
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -46,6 +56,27 @@ def get_ingest_fn():
     from rag.ingest import ingest
 
     return ingest
+
+
+def get_knowledge_admin_service():
+    return KnowledgeAdminService(Path(__file__).resolve().parent.parent / "knowledge")
+
+
+def get_reindex_fn(service: KnowledgeAdminService = Depends(get_knowledge_admin_service)):
+    def _reindex() -> int:
+        from rag.es_store import ESStore
+        from rag.ingest import ingest
+        from rag.qdrant_store import QdrantStore
+
+        count = ingest(service.knowledge_dir)
+        chunks = service.all_active_chunks()
+        service.delete_stale_chunks(
+            [chunk.chunk_id for chunk in chunks], ESStore(), QdrantStore()
+        )
+        service.write_manifest_from_chunks(chunks)
+        return count
+
+    return _reindex
 
 
 def _initial_state(message: str) -> dict:
@@ -174,6 +205,129 @@ def trigger_ingest(
     """Kick off a knowledge-base ingest as a background job; returns the job record."""
     job = registry.create()
     background_tasks.add_task(registry.run, job.id, ingest_fn)
+    return job.to_dict()
+
+
+def _knowledge_doc_id(domain: str, filename: str) -> str:
+    return f"{domain}/{filename}"
+
+
+def _knowledge_error(exc: Exception) -> HTTPException:
+    if isinstance(exc, FileNotFoundError):
+        return HTTPException(status_code=404, detail="Knowledge document not found.")
+    if isinstance(exc, FileExistsError):
+        return HTTPException(status_code=409, detail="Knowledge document already exists.")
+    return HTTPException(status_code=400, detail=str(exc))
+
+
+@router.get("/admin/knowledge/docs", response_model=KnowledgeDocListResponse)
+def list_knowledge_documents(
+    domain: str = "",
+    q: str = "",
+    service: KnowledgeAdminService = Depends(get_knowledge_admin_service),
+):
+    try:
+        documents = service.list_documents(domain=domain or None, q=q or None)
+    except ValueError as exc:
+        raise _knowledge_error(exc)
+    return KnowledgeDocListResponse(documents=documents)
+
+
+@router.get(
+    "/admin/knowledge/docs/{domain}/{filename}",
+    response_model=KnowledgeDocResponse,
+)
+def get_knowledge_document(
+    domain: str,
+    filename: str,
+    service: KnowledgeAdminService = Depends(get_knowledge_admin_service),
+):
+    try:
+        return service.get_document(_knowledge_doc_id(domain, filename))
+    except (FileNotFoundError, ValueError) as exc:
+        raise _knowledge_error(exc)
+
+
+@router.post(
+    "/admin/knowledge/docs",
+    response_model=KnowledgeDocResponse,
+    status_code=201,
+)
+def create_knowledge_document(
+    payload: KnowledgeDocRequest,
+    service: KnowledgeAdminService = Depends(get_knowledge_admin_service),
+):
+    try:
+        return service.create_document(payload)
+    except (FileExistsError, ValueError) as exc:
+        raise _knowledge_error(exc)
+
+
+@router.put(
+    "/admin/knowledge/docs/{domain}/{filename}",
+    response_model=KnowledgeDocResponse,
+)
+def update_knowledge_document(
+    domain: str,
+    filename: str,
+    payload: KnowledgeDocRequest,
+    service: KnowledgeAdminService = Depends(get_knowledge_admin_service),
+):
+    try:
+        return service.update_document(_knowledge_doc_id(domain, filename), payload)
+    except (FileNotFoundError, ValueError) as exc:
+        raise _knowledge_error(exc)
+
+
+@router.delete(
+    "/admin/knowledge/docs/{domain}/{filename}",
+    response_model=KnowledgeDocResponse,
+)
+def delete_knowledge_document(
+    domain: str,
+    filename: str,
+    service: KnowledgeAdminService = Depends(get_knowledge_admin_service),
+):
+    try:
+        return service.soft_delete_document(_knowledge_doc_id(domain, filename))
+    except (FileNotFoundError, ValueError) as exc:
+        raise _knowledge_error(exc)
+
+
+@router.post(
+    "/admin/knowledge/validate",
+    response_model=KnowledgeValidationResponse,
+)
+def validate_knowledge_document(
+    payload: KnowledgeDocRequest,
+    service: KnowledgeAdminService = Depends(get_knowledge_admin_service),
+):
+    return service.validate_document(payload)
+
+
+@router.get(
+    "/admin/knowledge/docs/{domain}/{filename}/chunks",
+    response_model=list[ChunkPreviewResponse],
+)
+def preview_knowledge_chunks(
+    domain: str,
+    filename: str,
+    service: KnowledgeAdminService = Depends(get_knowledge_admin_service),
+):
+    try:
+        return service.preview_chunks(_knowledge_doc_id(domain, filename))
+    except (FileNotFoundError, ValueError) as exc:
+        raise _knowledge_error(exc)
+
+
+@router.post("/admin/knowledge/reindex", status_code=202)
+def trigger_knowledge_reindex(
+    background_tasks: BackgroundTasks,
+    registry=Depends(get_job_registry),
+    reindex_fn=Depends(get_reindex_fn),
+):
+    job = registry.create()
+    background_tasks.add_task(registry.run, job.id, reindex_fn)
     return job.to_dict()
 
 
