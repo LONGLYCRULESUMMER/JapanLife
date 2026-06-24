@@ -26,5 +26,6 @@ dist/
 # Next.js frontend artifacts
 web/.next/
 web/node_modules/
+web/next-env.d.ts
 web/tsconfig.tsbuildinfo
 web/.env.local
