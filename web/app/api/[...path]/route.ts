@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const backendBaseUrl = process.env.API_URL ?? "http://localhost:8000";
+import { proxyToBackend, safeBackendUrl } from "@/lib/server/proxy";
 
 type RouteContext = {
   params: Promise<{ path: string[] }>;
@@ -12,23 +11,12 @@ async function proxyPublic(request: NextRequest, context: RouteContext) {
     return new NextResponse("Not found", { status: 404 });
   }
 
-  const targetUrl = new URL(`/${path.join("/")}`, backendBaseUrl.replace(/\/+$/, ""));
-  targetUrl.search = request.nextUrl.search;
+  const targetUrl = safeBackendUrl("", path, request.nextUrl.search);
+  if (!targetUrl) {
+    return new NextResponse("Invalid proxy path.", { status: 400 });
+  }
 
-  const headers = new Headers(request.headers);
-  headers.delete("host");
-
-  const response = await fetch(targetUrl, {
-    method: request.method,
-    headers,
-    body: request.method === "GET" || request.method === "HEAD" ? undefined : await request.text(),
-    cache: "no-store",
-  });
-
-  return new NextResponse(response.body, {
-    status: response.status,
-    headers: response.headers,
-  });
+  return proxyToBackend(request, targetUrl);
 }
 
 export async function GET(request: NextRequest, context: RouteContext) {
