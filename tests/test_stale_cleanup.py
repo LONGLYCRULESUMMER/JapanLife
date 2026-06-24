@@ -91,3 +91,28 @@ def test_soft_delete_preserves_deleted_document_record(tmp_path: Path):
     assert manifest["deleted_documents"]["tax/old-guide.md"]["chunk_ids"] == [
         chunks[0].chunk_id
     ]
+
+
+def test_soft_delete_records_chunk_ids_without_existing_manifest(tmp_path: Path):
+    service = KnowledgeAdminService(tmp_path)
+    (tmp_path / "tax").mkdir()
+    (tmp_path / "tax" / "legacy-guide.md").write_text(
+        "---\n"
+        "doc_title: Legacy Guide\n"
+        "source_url: https://example.com/legacy\n"
+        "language: en\n"
+        "---\n\n"
+        "# Legacy Guide\n\n## Intro\nLegacy body.",
+        encoding="utf-8",
+    )
+
+    service.soft_delete_document("tax/legacy-guide.md")
+
+    manifest = service.read_manifest()
+    chunk_ids = manifest["deleted_documents"]["tax/legacy-guide.md"]["chunk_ids"]
+    assert len(chunk_ids) == 1
+
+    es = _FakeES()
+    qdrant = _FakeQdrant()
+    stale = service.delete_stale_chunks(set(), es, qdrant)
+    assert stale == chunk_ids

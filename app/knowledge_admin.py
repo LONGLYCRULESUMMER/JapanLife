@@ -116,10 +116,13 @@ class KnowledgeAdminService:
         domain, filename = self._split_doc_id(doc_id)
         manifest = self.read_manifest()
         existing = manifest.get("documents", {}).pop(doc_id, None)
+        chunk_ids = list((existing or {}).get("chunk_ids", []))
+        if not chunk_ids:
+            chunk_ids = [chunk.chunk_id for chunk in self._chunks_for_document(document)]
         manifest.setdefault("deleted_documents", {})[doc_id] = {
             "status": "deleted",
             "deleted_at": datetime.now(timezone.utc).isoformat(),
-            "chunk_ids": list((existing or {}).get("chunk_ids", [])),
+            "chunk_ids": chunk_ids,
         }
         self.write_manifest(manifest)
         trash_path = self._trash_path(domain, filename)

@@ -6,26 +6,16 @@ type RouteContext = {
   params: Promise<{ path: string[] }>;
 };
 
-async function proxyAdmin(request: NextRequest, context: RouteContext) {
-  const adminToken = process.env.ADMIN_API_KEY;
-  const uiAdminToken = process.env.ADMIN_TOKEN;
-  if (!adminToken) {
-    return new NextResponse("Admin API key is not configured.", { status: 503 });
-  }
-  if (!uiAdminToken) {
-    return new NextResponse("Admin token is not configured.", { status: 503 });
-  }
-  const provided = request.headers.get("x-admin-token") ?? request.cookies.get("admin_token")?.value;
-  if (provided !== uiAdminToken) {
-    return new NextResponse("Admin token required.", { status: 401 });
+async function proxyPublic(request: NextRequest, context: RouteContext) {
+  const { path } = await context.params;
+  if (path[0] === "admin") {
+    return new NextResponse("Not found", { status: 404 });
   }
 
-  const { path } = await context.params;
-  const targetUrl = new URL(`/admin/${path.join("/")}`, backendBaseUrl.replace(/\/+$/, ""));
+  const targetUrl = new URL(`/${path.join("/")}`, backendBaseUrl.replace(/\/+$/, ""));
   targetUrl.search = request.nextUrl.search;
 
   const headers = new Headers(request.headers);
-  headers.set("x-admin-token", adminToken);
   headers.delete("host");
 
   const response = await fetch(targetUrl, {
@@ -42,17 +32,17 @@ async function proxyAdmin(request: NextRequest, context: RouteContext) {
 }
 
 export async function GET(request: NextRequest, context: RouteContext) {
-  return proxyAdmin(request, context);
+  return proxyPublic(request, context);
 }
 
 export async function POST(request: NextRequest, context: RouteContext) {
-  return proxyAdmin(request, context);
+  return proxyPublic(request, context);
 }
 
 export async function PUT(request: NextRequest, context: RouteContext) {
-  return proxyAdmin(request, context);
+  return proxyPublic(request, context);
 }
 
 export async function DELETE(request: NextRequest, context: RouteContext) {
-  return proxyAdmin(request, context);
+  return proxyPublic(request, context);
 }
