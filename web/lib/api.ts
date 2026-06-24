@@ -150,8 +150,16 @@ export async function listKnowledgeDocs(domain: Domain | "", q: string): Promise
   return request<{ documents: KnowledgeDoc[] }>(`/admin/knowledge/docs${query ? `?${query}` : ""}`);
 }
 
+function docPath(docId: string): string {
+  const [domain, filename, ...rest] = docId.split("/");
+  if (!domain || !filename || rest.length > 0) {
+    throw new Error("Document id must be domain/filename.");
+  }
+  return `${encodeURIComponent(domain)}/${encodeURIComponent(filename)}`;
+}
+
 export async function getKnowledgeDoc(docId: string): Promise<KnowledgeDoc> {
-  return request<KnowledgeDoc>(`/admin/knowledge/docs/${encodeURIComponent(docId)}`);
+  return request<KnowledgeDoc>(`/admin/knowledge/docs/${docPath(docId)}`);
 }
 
 export async function createKnowledgeDoc(payload: KnowledgeDocPayload): Promise<KnowledgeDoc> {
@@ -159,11 +167,11 @@ export async function createKnowledgeDoc(payload: KnowledgeDocPayload): Promise<
 }
 
 export async function updateKnowledgeDoc(docId: string, payload: KnowledgeDocPayload): Promise<KnowledgeDoc> {
-  return request<KnowledgeDoc>(`/admin/knowledge/docs/${encodeURIComponent(docId)}`, jsonRequestInit("PUT", payload));
+  return request<KnowledgeDoc>(`/admin/knowledge/docs/${docPath(docId)}`, jsonRequestInit("PUT", payload));
 }
 
 export async function deleteKnowledgeDoc(docId: string): Promise<KnowledgeDoc | undefined> {
-  return request<KnowledgeDoc | undefined>(`/admin/knowledge/docs/${encodeURIComponent(docId)}`, jsonRequestInit("DELETE"));
+  return request<KnowledgeDoc | undefined>(`/admin/knowledge/docs/${docPath(docId)}`, jsonRequestInit("DELETE"));
 }
 
 export async function validateKnowledgeDoc(payload: KnowledgeDocPayload): Promise<KnowledgeValidation> {
@@ -171,7 +179,7 @@ export async function validateKnowledgeDoc(payload: KnowledgeDocPayload): Promis
 }
 
 export async function previewChunks(docId: string): Promise<{ chunks: ChunkPreview[] }> {
-  return request<{ chunks: ChunkPreview[] }>(`/admin/knowledge/docs/${encodeURIComponent(docId)}/chunks`);
+  return request<{ chunks: ChunkPreview[] }>(`/admin/knowledge/docs/${docPath(docId)}/chunks`);
 }
 
 export async function triggerKnowledgeReindex(): Promise<IngestJob> {
