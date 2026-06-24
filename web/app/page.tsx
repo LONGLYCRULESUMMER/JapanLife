@@ -48,7 +48,7 @@ export default function HomePage() {
         <Panel className="relative overflow-hidden p-2 shadow-[0_40px_120px_rgb(0_0_0/0.34)]" variant="elevated">
           <div className="relative aspect-[4/3] overflow-hidden rounded-[calc(var(--radius-card)-0.45rem)] bg-[#091411]">
             <Image
-              alt="A quiet municipal office desk in Japan with documents prepared for review"
+              alt="A sharp mountain ridge under a clear sky"
               className="object-cover opacity-80 saturate-[0.82]"
               fill
               priority
@@ -59,7 +59,7 @@ export default function HomePage() {
             <div className="absolute bottom-0 left-0 right-0 p-5">
               <p className="font-mono text-xs text-[var(--accent)]">curated source layer</p>
               <h2 className="mt-2 max-w-md text-3xl font-semibold tracking-[-0.05em] text-[#eff8f3]">
-                Official paperwork, translated into usable steps.
+                A clear route through complex paperwork.
               </h2>
               <p className="mt-3 max-w-[46ch] text-sm leading-6 text-[#c9d8d1]">
                 The assistant retrieves cited chunks from tax, visa, and municipal knowledge before composing an answer.
