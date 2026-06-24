@@ -22,3 +22,9 @@ dist/
 # superpowers brainstorming artifacts
 .superpowers/
 .worktrees/
+
+# Next.js frontend artifacts
+web/.next/
+web/node_modules/
+web/tsconfig.tsbuildinfo
+web/.env.local
