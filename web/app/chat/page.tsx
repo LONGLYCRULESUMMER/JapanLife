@@ -1,4 +1,5 @@
 import { ChatConsole } from "@/components/chat/chat-console";
+import { RetrievalInspector } from "@/components/retrieval/retrieval-inspector";
 import { PublicShell } from "@/components/shell/public-shell";
 
 export default function ChatPage() {
@@ -14,7 +15,10 @@ export default function ChatPage() {
             Routed specialist agents answer with deterministic tools, curated retrieval, and citations.
           </p>
         </div>
-        <ChatConsole />
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(360px,0.85fr)]">
+          <ChatConsole />
+          <RetrievalInspector />
+        </div>
       </section>
     </PublicShell>
   );
