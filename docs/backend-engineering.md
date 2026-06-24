@@ -72,6 +72,29 @@ make ingest-job-demo  # POST a job, then poll its status
 scheduling, or fan-out. The job model is shaped so the registry + endpoints stay the same when
 the executor becomes Celery/RQ/Arq with a database-backed job table.
 
+## Product frontend / Knowledge Admin
+
+The primary product frontend is a Next.js App Router project under `web/`. It keeps the public
+product and chat surfaces separate from admin operations: `/chat` is the user-facing Agent chat
+with a retrieval inspector, while `/admin/login` and `/admin/knowledge` gate the knowledge-base
+admin console.
+
+Next.js owns the browser-facing API boundary. Public calls go through the `/api/*` proxy to the
+FastAPI backend. Admin calls go through `/api/admin/*`, which verifies the UI admin cookie, then
+forwards to FastAPI `/admin/*` endpoints with the backend admin credential. This separates the
+two auth concerns:
+
+- `ADMIN_TOKEN` protects the Next.js admin UI and creates the HTTP-only admin cookie after
+  `/admin/login`.
+- `ADMIN_API_KEY` protects FastAPI admin endpoints such as `/admin/knowledge/*` and
+  `/admin/ingest`.
+
+Knowledge content stays Git-based: Markdown files under `knowledge/` remain the source of truth.
+The admin console edits those files through FastAPI CRUD endpoints, validates front matter and
+body content before saving, previews chunks before indexing, and soft-deletes documents so Git
+history remains reviewable. Manifest-backed stale cleanup removes chunks from ElasticSearch and
+Qdrant when Markdown documents are renamed or deleted.
+
 ## Error handling & graceful degradation
 
 - **Retrieval degradation** — if ElasticSearch *or* Qdrant raises, `HybridRetriever.search`

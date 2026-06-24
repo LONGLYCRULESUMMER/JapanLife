@@ -148,20 +148,32 @@ make answer-eval              # answer-level eval with the real agent (needs API
 | GET | `/admin/ingest/jobs` | — | `{jobs[]}` (most recent first) |
 | GET | `/admin/ingest/jobs/{id}` | — | one job (`id, status, chunks_indexed, error, ...`) |
 
-## Demo (Streamlit)
+## Frontend
 
-A decoupled Streamlit page showcases the tech stack, **live architecture diagrams**, an
-interactive **multi-agent chat**, and a **hybrid-retrieval inspector**. It talks to the FastAPI
-backend over HTTP.
+The primary product frontend is a Next.js App Router app in `web/`. It talks to the FastAPI
+backend through Next.js API proxies by default.
+
+- `/` - product landing page
+- `/chat` - user-facing Agent chat and retrieval inspector
+- `/admin/login` - admin login
+- `/admin/knowledge` - knowledge-base admin console
 
 ```bash
-make up         # (or make serve) start the backend (ES + Qdrant + API)
-make demo       # Streamlit at http://localhost:8501
+make up           # start ElasticSearch, Qdrant, and the FastAPI backend
+make web-install  # install Next.js dependencies
+make web-dev      # Next.js at http://localhost:3000
 ```
 
-Set `API_URL` to point the page at a non-default backend (default `http://localhost:8000`). The
-overview/architecture sections render without a backend; chat and the retrieval inspector show a
-status banner if the API is unreachable.
+If the backend is not at `http://localhost:8000`, set `API_URL` for the Next.js server-side proxy.
+Set `NEXT_PUBLIC_API_URL` only when the browser should call a different API base directly instead
+of the default `/api` proxy. Set `ADMIN_TOKEN` for the UI admin login and cookie gate, and
+`ADMIN_API_KEY` for the FastAPI admin API that backs knowledge management.
+
+The old Streamlit demo remains available as an optional legacy surface:
+
+```bash
+make demo
+```
 
 ## Evaluation
 

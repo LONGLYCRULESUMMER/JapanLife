@@ -1,7 +1,16 @@
-.PHONY: install up down ingest eval answer-eval answer-eval-stub ingest-job-demo cache-test test test-all serve build logs ingest-docker demo
+.PHONY: install web-install web-dev web-build up down ingest eval answer-eval answer-eval-stub ingest-job-demo cache-test test test-all serve build logs ingest-docker demo
 
 install:
 	poetry install
+
+web-install:
+	cd web && npm install
+
+web-dev:
+	cd web && npm run dev
+
+web-build:
+	cd web && npm run build
 
 up:
 	docker compose up -d --build
