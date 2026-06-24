@@ -1,0 +1,63 @@
+{"question": "転入届はいつまでに出す必要がありますか", "relevant": ["ward_office/01-moving-in.md"], "lang": "ja", "type": "numeric"}
+{"question": "What is My Number used for?", "relevant": ["ward_office/02-my-number.md"], "lang": "en", "type": "keyword"}
+{"question": "How many digits is a My Number?", "relevant": ["ward_office/02-my-number.md"], "lang": "en", "type": "numeric"}
+{"question": "別の市区町村へ引っ越すとき転出届はどこで出しますか", "relevant": ["ward_office/03-moving-out.md"], "lang": "ja", "type": "semantic"}
+{"question": "What is a moving-out certificate and why do I need it?", "relevant": ["ward_office/03-moving-out.md"], "lang": "en", "type": "semantic"}
+{"question": "How do I get a copy of my residence certificate (juminhyo)?", "relevant": ["ward_office/04-residence-record.md"], "lang": "en", "type": "keyword"}
+{"question": "住民票の写しはコンビニで取得できますか", "relevant": ["ward_office/04-residence-record.md"], "lang": "ja", "type": "semantic"}
+{"question": "Who has to enroll in National Health Insurance?", "relevant": ["ward_office/05-national-health-insurance.md"], "lang": "en", "type": "semantic"}
+{"question": "国民健康保険の窓口での自己負担割合は何割ですか", "relevant": ["ward_office/05-national-health-insurance.md"], "lang": "ja", "type": "numeric"}
+{"question": "I quit my job, do I need to change my health insurance?", "relevant": ["ward_office/05-national-health-insurance.md"], "lang": "en", "type": "semantic"}
+{"question": "国民年金は何歳から何歳まで加入する必要がありますか", "relevant": ["ward_office/06-national-pension.md"], "lang": "ja", "type": "numeric"}
+{"question": "Can I get a pension refund when I leave Japan?", "relevant": ["ward_office/06-national-pension.md"], "lang": "en", "type": "semantic"}
+{"question": "学生は国民年金の支払いを猶予してもらえますか", "relevant": ["ward_office/06-national-pension.md"], "lang": "ja", "type": "semantic"}
+{"question": "How do I register my personal seal (inkan)?", "relevant": ["ward_office/07-seal-registration.md"], "lang": "en", "type": "keyword"}
+{"question": "実印と認印の違いは何ですか", "relevant": ["ward_office/07-seal-registration.md"], "lang": "ja", "type": "confusing"}
+{"question": "When does my resident tax bill arrive from the city office?", "relevant": ["ward_office/08-municipal-tax-and-insurance.md", "tax/08-resident-tax.md"], "lang": "en", "type": "confusing"}
+{"question": "市役所への税金や保険料の支払いができないときはどうすればいいですか", "relevant": ["ward_office/08-municipal-tax-and-insurance.md"], "lang": "ja", "type": "semantic"}
+{"question": "How is household garbage sorted in Japan?", "relevant": ["ward_office/09-garbage-and-services.md"], "lang": "en", "type": "keyword"}
+{"question": "粗大ごみはどうやって捨てますか", "relevant": ["ward_office/09-garbage-and-services.md"], "lang": "ja", "type": "semantic"}
+{"question": "How do I apply for the child allowance after my baby is born?", "relevant": ["ward_office/09-garbage-and-services.md"], "lang": "en", "type": "semantic"}
+{"question": "moving to a new city, which ward office procedures do I need to do?", "relevant": ["ward_office/01-moving-in.md", "ward_office/03-moving-out.md"], "lang": "en", "type": "cross"}
+{"question": "マイナンバーカードでできる手続きには何がありますか", "relevant": ["ward_office/02-my-number.md", "ward_office/04-residence-record.md"], "lang": "mixed", "type": "cross"}
+{"question": "How do I apply for the child allowance?", "relevant": ["ward_office/10-child-allowance.md"], "lang": "en", "type": "semantic"}
+{"question": "出生届は何日以内に出す必要がありますか", "relevant": ["ward_office/10-child-allowance.md"], "lang": "ja", "type": "numeric"}
+{"question": "Are child vaccinations free in Japan?", "relevant": ["ward_office/11-health-checkups-vaccinations.md"], "lang": "en", "type": "semantic"}
+{"question": "How can I get a residence certificate at a convenience store?", "relevant": ["ward_office/12-certificates.md", "ward_office/04-residence-record.md"], "lang": "en", "type": "confusing"}
+{"question": "外国の運転免許を日本の免許に切り替えるには何が必要ですか", "relevant": ["ward_office/13-drivers-license-conversion.md"], "lang": "ja", "type": "semantic"}
+{"question": "What number do I call for an ambulance in Japan?", "relevant": ["ward_office/14-disaster-emergency.md"], "lang": "en", "type": "numeric"}
+{"question": "転入届は何日以内に提出しますか", "relevant": ["ward_office/01-moving-in.ja.md", "ward_office/01-moving-in.md"], "lang": "ja", "type": "numeric"}
+{"question": "国民健康保険には誰が加入しますか", "relevant": ["ward_office/05-national-health-insurance.ja.md", "ward_office/05-national-health-insurance.md"], "lang": "ja", "type": "semantic"}
+{"question": "国民年金は何歳から加入しますか", "relevant": ["ward_office/06-national-pension.ja.md", "ward_office/06-national-pension.md"], "lang": "ja", "type": "numeric"}
+{"question": "How do I report an address change within the same city?", "relevant": ["ward_office/15-address-change-same-city.md", "ward_office/01-moving-in.md"], "lang": "en", "type": "confusing"}
+{"question": "What ward office procedures are needed when moving out of Japan?", "relevant": ["ward_office/16-moving-out-abroad.md", "tax/13-leaving-japan-tax.md"], "lang": "en", "type": "cross"}
+{"question": "How are National Health Insurance premiums calculated and billed?", "relevant": ["ward_office/17-national-health-insurance-premiums.md"], "lang": "en", "type": "semantic"}
+{"question": "Can I request a reduction or exemption for NHI premiums?", "relevant": ["ward_office/18-nhi-reduction-exemption.md", "ward_office/17-national-health-insurance-premiums.md"], "lang": "en", "type": "semantic"}
+{"question": "When does long-term care insurance start in Japan?", "relevant": ["ward_office/19-long-term-care-insurance.md"], "lang": "en", "type": "numeric"}
+{"question": "What maternity and childbirth support can I ask about at the ward office?", "relevant": ["ward_office/20-maternity-childbirth-support.md"], "lang": "en", "type": "keyword"}
+{"question": "What documents do I need for a daycare application?", "relevant": ["ward_office/21-daycare-application-basics.md"], "lang": "en", "type": "keyword"}
+{"question": "How do I enroll my child in local school through the ward office?", "relevant": ["ward_office/22-school-enrollment-children.md", "visa/33-dependent-child-schooling.md"], "lang": "en", "type": "cross"}
+{"question": "What is the child medical subsidy and where do I apply?", "relevant": ["ward_office/23-child-medical-subsidy.md"], "lang": "en", "type": "semantic"}
+{"question": "How do I start or stop water and sewer service after moving?", "relevant": ["ward_office/24-water-sewer-setup.md"], "lang": "en", "type": "keyword"}
+{"question": "Where do I register a bicycle and apply for parking?", "relevant": ["ward_office/25-bicycle-registration-parking.md"], "lang": "en", "type": "keyword"}
+{"question": "Do I need to register my dog at the ward office?", "relevant": ["ward_office/26-pet-registration.md"], "lang": "en", "type": "semantic"}
+{"question": "How do I apply for a disability certificate?", "relevant": ["ward_office/27-disability-certificate-overview.md"], "lang": "en", "type": "keyword"}
+{"question": "Who can apply for public housing through the city office?", "relevant": ["ward_office/28-public-housing-overview.md"], "lang": "en", "type": "semantic"}
+{"question": "Where can foreign residents get consultation at city hall?", "relevant": ["ward_office/29-foreign-resident-consultation.md"], "lang": "en", "type": "keyword"}
+{"question": "Does the ward office offer multilingual support for procedures?", "relevant": ["ward_office/30-multilingual-support.md"], "lang": "en", "type": "semantic"}
+{"question": "How can I use libraries and community services after moving in?", "relevant": ["ward_office/31-library-and-community-services.md"], "lang": "en", "type": "keyword"}
+{"question": "What is filed at the ward office for marriage or divorce?", "relevant": ["ward_office/32-marriage-divorce-registration.md"], "lang": "en", "type": "confusing"}
+{"question": "How soon must a death registration be filed?", "relevant": ["ward_office/33-death-registration.md"], "lang": "en", "type": "numeric"}
+{"question": "Can foreigners get family register or residence record certificates?", "relevant": ["ward_office/34-family-register-for-foreigners.md", "ward_office/04-residence-record.md"], "lang": "en", "type": "confusing"}
+{"question": "What ward office steps are needed after a baby is born?", "relevant": ["ward_office/35-notification-after-birth.md", "ward_office/10-child-allowance.md"], "lang": "en", "type": "cross"}
+{"question": "Can I pay municipal tax at the city office?", "relevant": ["ward_office/36-tax-payment-at-city-office.md", "tax/08-resident-tax.md"], "lang": "en", "type": "cross"}
+{"question": "When should I renew my My Number card?", "relevant": ["ward_office/37-my-number-card-renewal.md", "ward_office/02-my-number.md"], "lang": "en", "type": "numeric"}
+{"question": "Which certificates can I get at a convenience store?", "relevant": ["ward_office/38-convenience-store-certificates.md", "ward_office/12-certificates.md"], "lang": "en", "type": "keyword"}
+{"question": "同じ市区町村内で引っ越したら転居届はどこで出しますか", "relevant": ["ward_office/15-address-change-same-city.ja.md", "ward_office/15-address-change-same-city.md"], "lang": "ja", "type": "semantic"}
+{"question": "海外転出するとき区役所で必要な届出は何ですか", "relevant": ["ward_office/16-moving-out-abroad.ja.md", "ward_office/16-moving-out-abroad.md"], "lang": "ja", "type": "keyword"}
+{"question": "国民健康保険料は前年所得で決まりますか", "relevant": ["ward_office/17-national-health-insurance-premiums.ja.md", "ward_office/17-national-health-insurance-premiums.md"], "lang": "ja", "type": "semantic"}
+{"question": "収入が減ったとき国民健康保険料の減免を相談できますか", "relevant": ["ward_office/18-nhi-reduction-exemption.ja.md", "ward_office/18-nhi-reduction-exemption.md"], "lang": "ja", "type": "semantic"}
+{"question": "妊娠したら母子健康手帳は区役所でもらえますか", "relevant": ["ward_office/20-maternity-childbirth-support.ja.md", "ward_office/20-maternity-childbirth-support.md"], "lang": "ja", "type": "keyword"}
+{"question": "保育園申込みには就労証明書が必要ですか", "relevant": ["ward_office/21-daycare-application-basics.ja.md", "ward_office/21-daycare-application-basics.md"], "lang": "ja", "type": "keyword"}
+{"question": "出生届は何日以内に提出しますか", "relevant": ["ward_office/35-notification-after-birth.ja.md", "ward_office/35-notification-after-birth.md"], "lang": "ja", "type": "numeric"}
+{"question": "マイナンバーカードの更新通知が来たらどこで手続きしますか", "relevant": ["ward_office/37-my-number-card-renewal.ja.md", "ward_office/37-my-number-card-renewal.md"], "lang": "ja", "type": "semantic"}
