@@ -69,7 +69,7 @@ class KnowledgeAdminService:
         path = self.resolve_doc_path(doc_id)
         if not path.exists():
             raise FileNotFoundError(doc_id)
-        return self._document_from_path(path)
+        return self._document_from_path(path) | {"needs_reindex": True}
 
     def create_document(self, payload: Any) -> dict:
         data = self._normalise_payload(payload)
@@ -85,7 +85,7 @@ class KnowledgeAdminService:
             self.render_markdown_document(data["metadata"], data["body"]),
             encoding="utf-8",
         )
-        return self._document_from_path(path)
+        return self._document_from_path(path) | {"needs_reindex": True}
 
     def update_document(self, doc_id: str, payload: Any) -> dict:
         path = self.resolve_doc_path(doc_id)
@@ -127,7 +127,7 @@ class KnowledgeAdminService:
         if trash_path.exists():
             trash_path.unlink()
         path.replace(trash_path)
-        return document
+        return document | {"needs_reindex": True}
 
     def validate_document(self, payload: Any, check_source: bool = True) -> dict:
         errors: list[str] = []
@@ -234,15 +234,32 @@ class KnowledgeAdminService:
     def delete_stale_chunks(
         self, current_chunk_ids: Iterable[str], es, qdrant
     ) -> list[str]:
+        manifest = self.read_manifest()
         previous_ids = {
             chunk_id
-            for record in self.read_manifest().get("documents", {}).values()
+            for record in manifest.get("documents", {}).values()
             for chunk_id in record.get("chunk_ids", [])
         }
+        previous_ids.update(
+            chunk_id
+            for record in manifest.get("deleted_documents", {}).values()
+            for chunk_id in record.get("chunk_ids", [])
+        )
         stale_ids = sorted(previous_ids - set(current_chunk_ids))
         if stale_ids:
             es.delete_chunks(stale_ids)
             qdrant.delete(stale_ids)
+            stale_set = set(stale_ids)
+            changed = False
+            for record in manifest.get("deleted_documents", {}).values():
+                original = list(record.get("chunk_ids", []))
+                remaining = [chunk_id for chunk_id in original if chunk_id not in stale_set]
+                if remaining != original:
+                    record["chunk_ids"] = remaining
+                    record["cleaned_at"] = datetime.now(timezone.utc).isoformat()
+                    changed = True
+            if changed:
+                self.write_manifest(manifest)
         return stale_ids
 
     def _normalise_payload(

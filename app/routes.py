@@ -85,7 +85,7 @@ def require_admin(
     x_admin_token: str | None = Header(default=None),
 ) -> None:
     if not settings.admin_api_key:
-        return
+        raise HTTPException(status_code=503, detail="Admin API key is not configured.")
     bearer = ""
     if authorization and authorization.lower().startswith("bearer "):
         bearer = authorization.split(" ", 1)[1].strip()
@@ -214,6 +214,7 @@ def search(q: str, domain: str = "", top_k: int = 5, retriever=Depends(get_retri
 @router.post("/admin/ingest", status_code=202)
 def trigger_ingest(
     background_tasks: BackgroundTasks,
+    _admin=Depends(require_admin),
     registry=Depends(get_job_registry),
     ingest_fn=Depends(get_ingest_fn),
 ):
@@ -355,12 +356,12 @@ def trigger_knowledge_reindex(
 
 
 @router.get("/admin/ingest/jobs")
-def list_ingest_jobs(registry=Depends(get_job_registry)):
+def list_ingest_jobs(_admin=Depends(require_admin), registry=Depends(get_job_registry)):
     return {"jobs": [job.to_dict() for job in registry.list()]}
 
 
 @router.get("/admin/ingest/jobs/{job_id}")
-def get_ingest_job(job_id: str, registry=Depends(get_job_registry)):
+def get_ingest_job(job_id: str, _admin=Depends(require_admin), registry=Depends(get_job_registry)):
     job = registry.get(job_id)
     if job is None:
         raise HTTPException(status_code=404, detail="Ingest job not found.")
