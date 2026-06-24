@@ -184,6 +184,36 @@ def test_create_document_accepts_flat_front_matter_fields(tmp_path: Path):
     assert created["metadata"]["doc_title"] == "Flat Guide"
 
 
+def test_update_document_preserves_extra_front_matter(tmp_path: Path):
+    service = KnowledgeAdminService(tmp_path)
+    (tmp_path / "tax").mkdir()
+    (tmp_path / "tax" / "dated-guide.md").write_text(
+        "---\n"
+        "doc_title: Dated Guide\n"
+        "source_url: https://example.com/dated\n"
+        "language: en\n"
+        "last_updated: 2026-06-24\n"
+        "---\n\n"
+        "# Dated Guide\n\n## Intro\nOld body.",
+        encoding="utf-8",
+    )
+
+    updated = service.update_document(
+        "tax/dated-guide.md",
+        {
+            "domain": "tax",
+            "filename": "dated-guide.md",
+            "doc_title": "Dated Guide",
+            "source_url": "https://example.com/dated",
+            "language": "en",
+            "body": "# Dated Guide\n\n## Intro\nNew body.",
+        },
+    )
+
+    assert updated["metadata"]["last_updated"] == "2026-06-24"
+    assert "last_updated: 2026-06-24" in (tmp_path / "tax" / "dated-guide.md").read_text(encoding="utf-8")
+
+
 def test_preview_chunks_returns_chunk_ids_text_and_metadata(tmp_path: Path):
     service = KnowledgeAdminService(tmp_path)
     service.create_document(

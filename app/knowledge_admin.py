@@ -96,6 +96,8 @@ class KnowledgeAdminService:
         path_domain, path_filename = self._split_doc_id(doc_id)
         if data["domain"] != path_domain or data["filename"] != path_filename:
             raise ValueError("payload domain and filename must match doc_id")
+        existing_metadata, _existing_body = self.parse_markdown_document(path.read_text(encoding="utf-8"))
+        data["metadata"] = {**existing_metadata, **data["metadata"]}
 
         validation = self.validate_document(data, check_source=False)
         if not validation["valid"]:

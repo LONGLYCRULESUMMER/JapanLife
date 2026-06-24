@@ -7,7 +7,9 @@ type RouteContext = {
 
 async function proxyPublic(request: NextRequest, context: RouteContext) {
   const { path } = await context.params;
-  if (path[0] === "admin") {
+  const joinedPath = path.join("/");
+  const allowed = joinedPath === "health" || joinedPath === "search" || joinedPath === "chat" || joinedPath === "chat/stream";
+  if (!allowed) {
     return new NextResponse("Not found", { status: 404 });
   }
 
