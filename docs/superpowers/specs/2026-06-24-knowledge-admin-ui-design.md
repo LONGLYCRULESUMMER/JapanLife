@@ -3,7 +3,7 @@
 - **Date**: 2026-06-24
 - **Status**: Approved for implementation planning
 - **Author**: @coda1997 + Copilot
-- **Scope**: Add an advanced Git-based knowledge-base management UI and admin API for Markdown documents, validation, chunk preview, full ingest, and stale chunk cleanup.
+- **Scope**: Replace the Streamlit demo plan with a production-grade Next.js frontend that separates the user Agent interface from the knowledge-base admin interface, while adding Git-based Markdown management APIs, validation, chunk preview, full ingest, and stale chunk cleanup.
 
 ---
 
@@ -38,20 +38,21 @@ This design keeps Markdown as the source of truth and adds management surfaces a
 
 ## 2. Goals
 
-1. Provide a knowledge admin UI suitable for local demo and resume discussion.
+1. Provide a production-grade frontend suitable for local demo and resume discussion.
 2. Keep the current Git-based Markdown workflow.
 3. Support create, read, update, and soft delete for `knowledge/<domain>/*.md`.
 4. Add front-matter validation and source URL checks.
 5. Add chunk preview without writing to ES/Qdrant.
 6. Add full reindex with stale chunk cleanup so deletes do not leave old vectors searchable.
 7. Preserve existing RAG, Agent, and retrieval behavior for normal users.
+8. Split user-facing Agent chat and admin knowledge management into independent routes and layouts.
 
 ---
 
 ## 3. Non-Goals
 
 - No database CMS in this phase.
-- No login, RBAC, multi-user collaboration, or approval workflow.
+- No full login/RBAC/multi-user approval workflow in this phase. A lightweight `ADMIN_TOKEN` gate is allowed for `/admin/*`.
 - No automatic Git branch/commit/PR creation from the UI.
 - No rich text editor; Markdown text editing is enough.
 - No real-time web crawler or official-site synchronization.
@@ -60,10 +61,12 @@ This design keeps Markdown as the source of truth and adds management surfaces a
 
 ## 4. Architecture
 
-Use a three-layer design:
+Use a four-layer design:
 
 ```text
-Streamlit Knowledge Admin tab
+Next.js frontend
+  /chat             user-facing Agent + retrieval inspector
+  /admin/knowledge  admin knowledge operations
         ↓ HTTP
 FastAPI /admin/knowledge/* routes
         ↓
@@ -139,43 +142,72 @@ Existing `/admin/ingest` remains available. The new `/admin/knowledge/reindex` w
 
 ---
 
-## 6. Streamlit UI
+## 6. Product Frontend
 
-Add a fourth tab to `streamlit_app.py`:
+The primary frontend is a new Next.js App Router project under `web/`.
 
 ```text
-Knowledge Admin
+web/
+  app/
+    page.tsx
+    chat/page.tsx
+    admin/knowledge/page.tsx
+  components/
+    chat/
+    knowledge/
+    retrieval/
+    shell/
+    ui/
+  lib/
+    api.ts
+    types.ts
+    config.ts
 ```
 
-The tab contains:
+### 6.1 User route: `/chat`
 
-1. **Document browser**
-   - domain filter
-   - text search
-   - document list with title, language, source URL, and status
+The user-facing surface contains:
 
-2. **Document editor**
-   - domain selector
-   - filename/slug input
-   - `doc_title`
-   - `source_url`
-   - `language`
-   - Markdown body text area
+- Agent chat using `/chat/stream`
+- route and tool status display
+- citations display
+- retrieval inspector using `/search`
+- loading, empty, and error states
 
-3. **Actions**
-   - Validate
-   - Preview chunks
-   - Save
-   - Soft delete
-   - Reindex knowledge base
+### 6.2 Admin route: `/admin/knowledge`
 
-4. **Status panels**
-   - validation warnings/errors
-   - source URL check result
-   - chunk count and chunk metadata preview
-   - current reindex job status
+The admin surface contains:
 
-The UI is intentionally simple. It is an admin surface for a backend/RAG project, not a full CMS product.
+- document browser with domain filter and search
+- Markdown metadata/body editor
+- Validate
+- Preview chunks
+- Save
+- Soft delete
+- Reindex knowledge base
+- reindex job status
+
+The admin route is separate from the user route and uses its own admin shell/navigation. A lightweight `ADMIN_TOKEN` boundary may protect `/admin/*`; full auth/RBAC remains a future production-hardening item.
+
+### 6.3 Taste-skill visual direction
+
+The frontend follows the installed `taste-skill` guidance:
+
+- production dark-tech/product-console aesthetic
+- `Geist` and `Geist Mono`, not Inter
+- one desaturated emerald accent
+- separate public and admin layouts
+- explicit loading, empty, and error states
+- no generic three-card feature row as the primary layout
+- no AI-purple default gradient
+- accessible focus states and form labels
+- `min-h-[100dvh]` for viewport stability
+
+---
+
+## 6. Legacy Streamlit
+
+`streamlit_app.py` may remain temporarily as a legacy demo, but it is no longer the target production frontend and should not receive the Knowledge Admin implementation.
 
 ---
 
@@ -319,4 +351,3 @@ This feature lets the project be described as:
 > A Git-based knowledge admin layer for RAG: Markdown remains the source of truth, the admin UI supports create/edit/soft-delete/validate/chunk-preview, and the reindex job uses a manifest to clean stale ES/Qdrant chunks so deleted documents do not remain retrievable.
 
 This is stronger than a simple demo UI because it addresses the lifecycle of knowledge documents, not only chat and search.
-
