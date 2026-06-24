@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ComponentPropsWithoutRef, MouseEvent, ReactNode } from "react";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
 type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 type ButtonSize = "sm" | "md" | "lg";
@@ -76,7 +76,7 @@ export function SecondaryButton(props: Omit<ButtonProps, "variant">) {
   return <Button variant="secondary" {...props} />;
 }
 
-export type ButtonLinkProps = Omit<ComponentPropsWithoutRef<typeof Link>, "className" | "children"> & {
+export type ButtonLinkProps = Omit<ComponentPropsWithoutRef<typeof Link>, "className" | "children" | "onClick"> & {
   className?: string;
   children: ReactNode;
   variant?: ButtonVariant;
@@ -90,23 +90,12 @@ export function ButtonLink({
   size = "md",
   disabled = false,
   children,
-  onClick,
   ...props
 }: ButtonLinkProps) {
-  function handleClick(event: MouseEvent<HTMLAnchorElement>) {
-    if (disabled) {
-      event.preventDefault();
-      return;
-    }
-
-    onClick?.(event);
-  }
-
   return (
     <Link
       aria-disabled={disabled || undefined}
       className={buttonClasses({ variant, size, className: cx(disabled && "cursor-not-allowed", className) })}
-      onClick={handleClick}
       tabIndex={disabled ? -1 : undefined}
       {...props}
     >
