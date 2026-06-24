@@ -1,0 +1,33 @@
+{"question": "When is the final income tax return due?", "relevant": ["tax/01-tax-filing-overview.md"], "lang": "en", "type": "keyword"}
+{"question": "確定申告の期間はいつからいつまでですか", "relevant": ["tax/01-tax-filing-overview.md"], "lang": "ja", "type": "numeric"}
+{"question": "Do I need to file a tax return if I have one job and 250,000 yen of side income?", "relevant": ["tax/01-tax-filing-overview.md"], "lang": "en", "type": "numeric"}
+{"question": "ふるさと納税の限度額はどうやって計算しますか", "relevant": ["tax/04-furusato-nozei.md"], "lang": "ja", "type": "semantic"}
+{"question": "What is the one-stop exception for furusato nozei?", "relevant": ["tax/04-furusato-nozei.md"], "lang": "en", "type": "keyword"}
+{"question": "How does year-end adjustment work?", "relevant": ["tax/05-year-end-adjustment.md"], "lang": "en", "type": "semantic"}
+{"question": "年末調整で医療費控除はできますか", "relevant": ["tax/05-year-end-adjustment.md", "tax/03-deductions-guide.md"], "lang": "ja", "type": "confusing"}
+{"question": "What are the income tax brackets in Japan?", "relevant": ["tax/02-income-tax-brackets.md"], "lang": "en", "type": "keyword"}
+{"question": "課税所得が500万円のときの所得税の計算方法は", "relevant": ["tax/02-income-tax-brackets.md"], "lang": "ja", "type": "numeric"}
+{"question": "What is the reconstruction special income tax rate?", "relevant": ["tax/02-income-tax-brackets.md"], "lang": "en", "type": "numeric"}
+{"question": "How much is the basic deduction for income tax?", "relevant": ["tax/03-deductions-guide.md"], "lang": "en", "type": "numeric"}
+{"question": "医療費控除はいくらを超えた分から受けられますか", "relevant": ["tax/03-deductions-guide.md"], "lang": "ja", "type": "numeric"}
+{"question": "Can I claim a deduction for my spouse and dependents?", "relevant": ["tax/03-deductions-guide.md"], "lang": "en", "type": "semantic"}
+{"question": "How do I file my taxes online with e-Tax?", "relevant": ["tax/06-etax-guide.md"], "lang": "en", "type": "keyword"}
+{"question": "e-Taxを使うのにマイナンバーカードは必要ですか", "relevant": ["tax/06-etax-guide.md", "ward_office/02-my-number.md"], "lang": "ja", "type": "cross"}
+{"question": "Do freelancers have to file a tax return every year?", "relevant": ["tax/07-tax-for-freelancers.md"], "lang": "en", "type": "semantic"}
+{"question": "青色申告の特別控除は最大いくらですか", "relevant": ["tax/07-tax-for-freelancers.md"], "lang": "ja", "type": "numeric"}
+{"question": "When are the estimated tax prepayment installments due for the self-employed?", "relevant": ["tax/07-tax-for-freelancers.md"], "lang": "en", "type": "numeric"}
+{"question": "freelancerの消費税インボイス制度について教えて", "relevant": ["tax/07-tax-for-freelancers.md"], "lang": "mixed", "type": "keyword"}
+{"question": "How is resident tax calculated and when do I pay it?", "relevant": ["tax/08-resident-tax.md", "tax/02-income-tax-brackets.md"], "lang": "en", "type": "confusing"}
+{"question": "今年日本に来たばかりでも住民税を払う必要がありますか", "relevant": ["tax/08-resident-tax.md"], "lang": "ja", "type": "semantic"}
+{"question": "What is the difference between special collection and ordinary collection of resident tax?", "relevant": ["tax/08-resident-tax.md"], "lang": "en", "type": "keyword"}
+{"question": "What is the consumption tax rate in Japan?", "relevant": ["tax/09-consumption-tax.md"], "lang": "en", "type": "keyword"}
+{"question": "テイクアウトと店内飲食で消費税率は違いますか", "relevant": ["tax/09-consumption-tax.md"], "lang": "ja", "type": "numeric"}
+{"question": "How much is the dependent deduction worth?", "relevant": ["tax/10-dependents-deductions.md"], "lang": "en", "type": "numeric"}
+{"question": "扶養に入れる年収の上限はいくらですか", "relevant": ["tax/10-dependents-deductions.md"], "lang": "ja", "type": "numeric"}
+{"question": "Can I deduct my medical expenses on my tax return?", "relevant": ["tax/11-medical-expense-deduction.md"], "lang": "en", "type": "semantic"}
+{"question": "医療費控除は年末調整でできますか", "relevant": ["tax/11-medical-expense-deduction.md", "tax/05-year-end-adjustment.md"], "lang": "ja", "type": "confusing"}
+{"question": "I am a non-permanent resident, is my foreign income taxed?", "relevant": ["tax/12-tax-treaty-foreign-income.md"], "lang": "en", "type": "semantic"}
+{"question": "What happens to my resident tax if I leave Japan mid-year?", "relevant": ["tax/13-leaving-japan-tax.md", "tax/08-resident-tax.md"], "lang": "en", "type": "cross"}
+{"question": "確定申告の期間を教えてください", "relevant": ["tax/01-tax-filing-overview.ja.md", "tax/01-tax-filing-overview.md"], "lang": "ja", "type": "semantic"}
+{"question": "ふるさと納税の自己負担はいくらですか", "relevant": ["tax/04-furusato-nozei.ja.md", "tax/04-furusato-nozei.md"], "lang": "ja", "type": "numeric"}
+{"question": "住民税はいつの所得を基準に計算されますか", "relevant": ["tax/08-resident-tax.ja.md", "tax/08-resident-tax.md"], "lang": "ja", "type": "semantic"}

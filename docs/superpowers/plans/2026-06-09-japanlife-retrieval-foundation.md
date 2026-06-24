@@ -71,7 +71,7 @@ pydantic-settings = "^2.5.0"
 elasticsearch = "^8.15.0"
 qdrant-client = "^1.12.0"
 sentence-transformers = "^3.3.0"
-numpy = "^1.26.0"
+numpy = ">=1.26"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
