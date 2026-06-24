@@ -28,6 +28,7 @@ class Settings(BaseSettings):
     cache_ttl_seconds: int = 60
 
     checkpoint_db: str = "./japanlife.db"
+    admin_api_key: str = ""
 
 
 settings = Settings()

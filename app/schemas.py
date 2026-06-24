@@ -20,8 +20,11 @@ class ChatResponse(BaseModel):
 class KnowledgeDocRequest(BaseModel):
     domain: str
     filename: str
-    metadata: dict[str, Any] = Field(default_factory=dict)
+    doc_title: str = ""
+    source_url: str = ""
+    language: str = ""
     body: str = ""
+    metadata: dict[str, Any] = Field(default_factory=dict)
     content: str | None = None
 
 
@@ -29,9 +32,13 @@ class KnowledgeDocResponse(BaseModel):
     doc_id: str
     domain: str
     filename: str
+    doc_title: str
+    source_url: str
+    language: str
     metadata: dict[str, Any]
     body: str
     content: str
+    needs_reindex: bool = False
 
 
 class KnowledgeDocListResponse(BaseModel):
@@ -44,7 +51,11 @@ class KnowledgeValidationResponse(BaseModel):
     warnings: list[str]
 
 
-class ChunkPreviewResponse(BaseModel):
+class ChunkPreviewItem(BaseModel):
     chunk_id: str
     text: str
     metadata: dict[str, Any]
+
+
+class ChunkPreviewResponse(BaseModel):
+    chunks: list[ChunkPreviewItem]

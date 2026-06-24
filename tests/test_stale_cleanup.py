@@ -44,6 +44,9 @@ def test_delete_stale_chunks_deletes_manifest_ids_missing_from_current_chunks(
         },
     )
     service.write_manifest_from_chunks([stale_chunk, current_chunk])
+    manifest = service.read_manifest()
+    assert set(manifest) >= {"documents", "deleted_documents"}
+    assert manifest["documents"]["tax/old-guide.md"]["chunk_ids"] == [stale_chunk.chunk_id]
     es = _FakeES()
     qdrant = _FakeQdrant()
 
@@ -64,3 +67,27 @@ def test_delete_stale_chunks_without_manifest_is_noop(tmp_path: Path):
     assert stale == []
     assert es.deleted == []
     assert qdrant.deleted == []
+
+
+def test_soft_delete_preserves_deleted_document_record(tmp_path: Path):
+    service = KnowledgeAdminService(tmp_path)
+    (tmp_path / "tax").mkdir()
+    (tmp_path / "tax" / "old-guide.md").write_text(
+        "---\n"
+        "doc_title: Old Guide\n"
+        "source_url: https://example.com/old\n"
+        "language: en\n"
+        "---\n\n"
+        "# Old Guide\n\n## Intro\nOld body.",
+        encoding="utf-8",
+    )
+    chunks = service.all_active_chunks()
+    service.write_manifest_from_chunks(chunks)
+
+    service.soft_delete_document("tax/old-guide.md")
+
+    manifest = service.read_manifest()
+    assert "tax/old-guide.md" not in manifest["documents"]
+    assert manifest["deleted_documents"]["tax/old-guide.md"]["chunk_ids"] == [
+        chunks[0].chunk_id
+    ]

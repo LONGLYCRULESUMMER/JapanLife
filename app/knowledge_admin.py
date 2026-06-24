@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 import ipaddress
 import re
-import socket
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
@@ -15,6 +14,8 @@ from rag.chunking import Chunk, chunk_markdown, split_front_matter
 class KnowledgeAdminService:
     ALLOWED_DOMAINS = {"tax", "visa", "ward_office"}
     FILENAME_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*(?:\.ja)?\.md$")
+    REQUIRED_METADATA = ("doc_title", "source_url", "language")
+    VALID_LANGUAGES = {"en", "ja", "mixed"}
 
     def __init__(self, knowledge_dir: Path):
         self.knowledge_dir = Path(knowledge_dir).resolve()
@@ -113,6 +114,14 @@ class KnowledgeAdminService:
 
         document = self._document_from_path(path)
         domain, filename = self._split_doc_id(doc_id)
+        manifest = self.read_manifest()
+        existing = manifest.get("documents", {}).pop(doc_id, None)
+        manifest.setdefault("deleted_documents", {})[doc_id] = {
+            "status": "deleted",
+            "deleted_at": datetime.now(timezone.utc).isoformat(),
+            "chunk_ids": list((existing or {}).get("chunk_ids", [])),
+        }
+        self.write_manifest(manifest)
         trash_path = self._trash_path(domain, filename)
         trash_path.parent.mkdir(parents=True, exist_ok=True)
         if trash_path.exists():
@@ -139,10 +148,18 @@ class KnowledgeAdminService:
         if not isinstance(metadata, dict):
             errors.append("metadata must be an object")
             metadata = {}
+        for key in self.REQUIRED_METADATA:
+            if not str(metadata.get(key, "")).strip():
+                errors.append(f"Missing {key}")
+        language = str(metadata.get("language", "")).strip()
+        if language and language not in self.VALID_LANGUAGES:
+            errors.append("language must be en, ja, or mixed")
 
         body = data.get("body") or ""
         if not isinstance(body, str) or not body.strip():
             errors.append("body is required")
+        elif not re.search(r"^#{1,6}\s+\S+", body, flags=re.MULTILINE):
+            errors.append("Markdown body must contain at least one heading")
 
         if check_source:
             warnings.extend(self._source_warnings(metadata))
@@ -164,44 +181,64 @@ class KnowledgeAdminService:
 
     def read_manifest(self) -> dict:
         if not self.manifest_path.exists():
-            return {"chunk_ids": [], "chunks": []}
+            return {"documents": {}, "deleted_documents": {}}
         with self.manifest_path.open(encoding="utf-8") as fh:
             data = json.load(fh)
-        data.setdefault("chunk_ids", [])
-        data.setdefault("chunks", [])
+        if "documents" not in data:
+            documents: dict[str, dict] = {}
+            for record in data.get("chunks", []):
+                doc_id = record.get("doc_id", "")
+                if not doc_id:
+                    continue
+                documents.setdefault(doc_id, {"status": "active", "chunk_ids": [], "updated_at": data.get("updated_at", "")})
+                documents[doc_id]["chunk_ids"].append(record.get("chunk_id", ""))
+            data = {"documents": documents, "deleted_documents": {}}
+        data.setdefault("documents", {})
+        data.setdefault("deleted_documents", {})
         return data
 
-    def write_manifest_from_chunks(self, chunks: Iterable[Chunk]) -> dict:
-        chunk_list = list(chunks)
-        records = [
-            {
-                "chunk_id": chunk.chunk_id,
-                "doc_id": chunk.metadata.get("doc_id", ""),
-                "domain": chunk.metadata.get("domain", ""),
-                "section_path": chunk.metadata.get("section_path", ""),
-                "chunk_index": chunk.metadata.get("chunk_index", 0),
-            }
-            for chunk in chunk_list
-        ]
-        records.sort(key=lambda item: item["chunk_id"])
-        manifest = {
-            "updated_at": datetime.now(timezone.utc).isoformat(),
-            "chunk_ids": [record["chunk_id"] for record in records],
-            "chunks": records,
+    def write_manifest(self, manifest: dict) -> dict:
+        normalised = {
+            "documents": manifest.get("documents", {}),
+            "deleted_documents": manifest.get("deleted_documents", {}),
+            "updated_at": manifest.get("updated_at") or datetime.now(timezone.utc).isoformat(),
         }
         self.knowledge_dir.mkdir(parents=True, exist_ok=True)
         next_path = self.manifest_path.with_name(".manifest.json.next")
         next_path.write_text(
-            json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
+            json.dumps(normalised, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
         )
         next_path.replace(self.manifest_path)
-        return manifest
+        return normalised
+
+    def write_manifest_from_chunks(self, chunks: Iterable[Chunk]) -> dict:
+        chunk_list = list(chunks)
+        now = datetime.now(timezone.utc).isoformat()
+        documents: dict[str, dict] = {}
+        for chunk in chunk_list:
+            doc_id = str(chunk.metadata.get("doc_id", ""))
+            if not doc_id:
+                continue
+            documents.setdefault(doc_id, {"status": "active", "chunk_ids": [], "updated_at": now})
+            documents[doc_id]["chunk_ids"].append(chunk.chunk_id)
+        for record in documents.values():
+            record["chunk_ids"] = sorted(set(record["chunk_ids"]))
+        manifest = {
+            "updated_at": now,
+            "documents": documents,
+            "deleted_documents": self.read_manifest().get("deleted_documents", {}),
+        }
+        return self.write_manifest(manifest)
 
     def delete_stale_chunks(
         self, current_chunk_ids: Iterable[str], es, qdrant
     ) -> list[str]:
-        previous_ids = set(self.read_manifest().get("chunk_ids", []))
+        previous_ids = {
+            chunk_id
+            for record in self.read_manifest().get("documents", {}).values()
+            for chunk_id in record.get("chunk_ids", [])
+        }
         stale_ids = sorted(previous_ids - set(current_chunk_ids))
         if stale_ids:
             es.delete_chunks(stale_ids)
@@ -216,7 +253,10 @@ class KnowledgeAdminService:
         else:
             raw = dict(payload or {})
 
-        metadata = raw.get("metadata") or {}
+        metadata = dict(raw.get("metadata") or {})
+        for key in self.REQUIRED_METADATA:
+            if raw.get(key) is not None:
+                metadata[key] = raw.get(key)
         body = raw.get("body") or ""
         content = raw.get("content")
         if content is not None and not body:
@@ -284,9 +324,13 @@ class KnowledgeAdminService:
             "doc_id": doc_id,
             "domain": domain,
             "filename": filename,
+            "doc_title": metadata.get("doc_title") or Path(filename).stem,
+            "source_url": metadata.get("source_url", ""),
+            "language": metadata.get("language", "mixed"),
             "metadata": metadata,
             "body": body,
             "content": content,
+            "needs_reindex": False,
         }
 
     def _search_text(self, document: dict) -> str:
@@ -331,7 +375,11 @@ class KnowledgeAdminService:
         ):
             return ["source_url should be an absolute http(s) URL"]
 
-        address_warning = self._unsafe_source_address_warning(parsed.hostname)
+        try:
+            address = ipaddress.ip_address(parsed.hostname)
+        except ValueError:
+            return []
+        address_warning = self._unsafe_source_address_warning(address)
         if address_warning:
             return [address_warning]
         return []
@@ -344,30 +392,17 @@ class KnowledgeAdminService:
                 paths.extend(sorted(domain_dir.glob("*.md")))
         return paths
 
-    def _unsafe_source_address_warning(self, hostname: str) -> str | None:
-        try:
-            addresses = [ipaddress.ip_address(hostname)]
-        except ValueError:
-            try:
-                infos = socket.getaddrinfo(hostname, None, type=socket.SOCK_STREAM)
-            except OSError as exc:
-                return f"source_url host could not be resolved: {exc}"
-            addresses = sorted(
-                {ipaddress.ip_address(info[4][0]) for info in infos},
-                key=str,
+    def _unsafe_source_address_warning(self, address: ipaddress._BaseAddress) -> str | None:
+        if (
+            address.is_loopback
+            or address.is_link_local
+            or address.is_private
+            or address.is_multicast
+            or address.is_reserved
+            or address.is_unspecified
+        ):
+            return (
+                "source_url resolves to a private or link-local "
+                f"address: {address}"
             )
-
-        for address in addresses:
-            if (
-                address.is_loopback
-                or address.is_link_local
-                or address.is_private
-                or address.is_multicast
-                or address.is_reserved
-                or address.is_unspecified
-            ):
-                return (
-                    "source_url resolves to a private or link-local "
-                    f"address: {address}"
-                )
         return None

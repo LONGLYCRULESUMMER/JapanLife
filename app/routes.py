@@ -5,7 +5,7 @@ import logging
 import uuid
 from pathlib import Path
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, Request
 from langchain_core.messages import AIMessageChunk, HumanMessage, ToolMessage
 from sse_starlette.sse import EventSourceResponse
 
@@ -20,6 +20,7 @@ from app.schemas import (
     KnowledgeDocResponse,
     KnowledgeValidationResponse,
 )
+from core.config import settings
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -77,6 +78,20 @@ def get_reindex_fn(service: KnowledgeAdminService = Depends(get_knowledge_admin_
         return count
 
     return _reindex
+
+
+def require_admin(
+    authorization: str | None = Header(default=None),
+    x_admin_token: str | None = Header(default=None),
+) -> None:
+    if not settings.admin_api_key:
+        return
+    bearer = ""
+    if authorization and authorization.lower().startswith("bearer "):
+        bearer = authorization.split(" ", 1)[1].strip()
+    token = x_admin_token or bearer
+    if token != settings.admin_api_key:
+        raise HTTPException(status_code=401, detail="Admin token required.")
 
 
 def _initial_state(message: str) -> dict:
@@ -224,6 +239,7 @@ def _knowledge_error(exc: Exception) -> HTTPException:
 def list_knowledge_documents(
     domain: str = "",
     q: str = "",
+    _admin=Depends(require_admin),
     service: KnowledgeAdminService = Depends(get_knowledge_admin_service),
 ):
     try:
@@ -240,6 +256,7 @@ def list_knowledge_documents(
 def get_knowledge_document(
     domain: str,
     filename: str,
+    _admin=Depends(require_admin),
     service: KnowledgeAdminService = Depends(get_knowledge_admin_service),
 ):
     try:
@@ -255,6 +272,7 @@ def get_knowledge_document(
 )
 def create_knowledge_document(
     payload: KnowledgeDocRequest,
+    _admin=Depends(require_admin),
     service: KnowledgeAdminService = Depends(get_knowledge_admin_service),
 ):
     try:
@@ -271,6 +289,7 @@ def update_knowledge_document(
     domain: str,
     filename: str,
     payload: KnowledgeDocRequest,
+    _admin=Depends(require_admin),
     service: KnowledgeAdminService = Depends(get_knowledge_admin_service),
 ):
     try:
@@ -286,6 +305,7 @@ def update_knowledge_document(
 def delete_knowledge_document(
     domain: str,
     filename: str,
+    _admin=Depends(require_admin),
     service: KnowledgeAdminService = Depends(get_knowledge_admin_service),
 ):
     try:
@@ -300,6 +320,7 @@ def delete_knowledge_document(
 )
 def validate_knowledge_document(
     payload: KnowledgeDocRequest,
+    _admin=Depends(require_admin),
     service: KnowledgeAdminService = Depends(get_knowledge_admin_service),
 ):
     return service.validate_document(payload)
@@ -307,15 +328,16 @@ def validate_knowledge_document(
 
 @router.get(
     "/admin/knowledge/docs/{domain}/{filename}/chunks",
-    response_model=list[ChunkPreviewResponse],
+    response_model=ChunkPreviewResponse,
 )
 def preview_knowledge_chunks(
     domain: str,
     filename: str,
+    _admin=Depends(require_admin),
     service: KnowledgeAdminService = Depends(get_knowledge_admin_service),
 ):
     try:
-        return service.preview_chunks(_knowledge_doc_id(domain, filename))
+        return {"chunks": service.preview_chunks(_knowledge_doc_id(domain, filename))}
     except (FileNotFoundError, ValueError) as exc:
         raise _knowledge_error(exc)
 
@@ -323,6 +345,7 @@ def preview_knowledge_chunks(
 @router.post("/admin/knowledge/reindex", status_code=202)
 def trigger_knowledge_reindex(
     background_tasks: BackgroundTasks,
+    _admin=Depends(require_admin),
     registry=Depends(get_job_registry),
     reindex_fn=Depends(get_reindex_fn),
 ):

@@ -18,6 +18,9 @@ def _payload(filename: str = "sample-guide.md") -> dict:
     return {
         "domain": "tax",
         "filename": filename,
+        "doc_title": "Sample Guide",
+        "source_url": "https://example.com/sample",
+        "language": "en",
         "metadata": {
             "doc_title": "Sample Guide",
             "source_url": "https://example.com/sample",
@@ -56,7 +59,7 @@ def test_admin_knowledge_crud_and_chunk_preview_api(client):
 
     got = c.get("/admin/knowledge/docs/tax/sample-guide.md")
     assert got.status_code == 200
-    assert got.json()["metadata"]["doc_title"] == "Sample Guide"
+    assert got.json()["doc_title"] == "Sample Guide"
 
     updated = c.put(
         "/admin/knowledge/docs/tax/sample-guide.md",
@@ -70,7 +73,7 @@ def test_admin_knowledge_crud_and_chunk_preview_api(client):
 
     chunks = c.get("/admin/knowledge/docs/tax/sample-guide.md/chunks")
     assert chunks.status_code == 200
-    assert chunks.json()[0]["metadata"]["doc_id"] == "tax/sample-guide.md"
+    assert chunks.json()["chunks"][0]["metadata"]["doc_id"] == "tax/sample-guide.md"
 
     deleted = c.delete("/admin/knowledge/docs/tax/sample-guide.md")
     assert deleted.status_code == 200
@@ -86,7 +89,7 @@ def test_validate_endpoint_returns_warning_without_hard_source_failure(client):
         "/admin/knowledge/validate",
         json={
             **_payload(),
-            "metadata": {"doc_title": "Sample Guide", "source_url": "not-a-url"},
+            "source_url": "not-a-url",
         },
     )
 
@@ -120,3 +123,18 @@ def test_reindex_endpoint_runs_background_job_with_override(client):
     assert job.status_code == 200
     assert job.json()["status"] == "succeeded"
     assert job.json()["chunks_indexed"] == 7
+
+
+def test_admin_routes_require_token_when_configured(client, monkeypatch):
+    c, _service = client
+    monkeypatch.setattr(settings, "admin_api_key", "secret-token")
+
+    blocked = c.post("/admin/knowledge/docs", json=_payload())
+    assert blocked.status_code == 401
+
+    allowed = c.post(
+        "/admin/knowledge/docs",
+        json=_payload(),
+        headers={"x-admin-token": "secret-token"},
+    )
+    assert allowed.status_code == 201

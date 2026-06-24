@@ -15,6 +15,9 @@ def _payload(
     return {
         "domain": domain,
         "filename": filename,
+        "doc_title": (metadata or {}).get("doc_title", "Sample Guide"),
+        "source_url": (metadata or {}).get("source_url", "https://example.com/sample"),
+        "language": (metadata or {}).get("language", "en"),
         "metadata": metadata
         or {
             "doc_title": "Sample Guide",
@@ -121,10 +124,20 @@ def test_validate_document_returns_errors_and_source_warnings(tmp_path: Path):
     assert any("domain" in error for error in invalid["errors"])
     assert any("filename" in error for error in invalid["errors"])
     assert any("body" in error for error in invalid["errors"])
+    assert "Missing doc_title" in invalid["errors"]
+    assert "Missing language" in invalid["errors"]
     assert any("source_url" in warning for warning in invalid["warnings"])
 
+    invalid_language = service.validate_document(
+        _payload(metadata={"doc_title": "Sample", "source_url": "https://example.com", "language": "xx"}),
+        check_source=False,
+    )
+
+    assert invalid_language["valid"] is False
+    assert "language must be en, ja, or mixed" in invalid_language["errors"]
+
     valid_with_warning = service.validate_document(
-        _payload(metadata={"doc_title": "Sample", "source_url": "not-a-url"}),
+        _payload(metadata={"doc_title": "Sample", "source_url": "not-a-url", "language": "en"}),
         check_source=True,
     )
 
@@ -141,6 +154,7 @@ def test_validate_document_warns_for_private_source_url(tmp_path: Path):
             metadata={
                 "doc_title": "Sample",
                 "source_url": "http://169.254.169.254/latest/meta-data/",
+                "language": "en",
             }
         )
     )
@@ -150,6 +164,24 @@ def test_validate_document_warns_for_private_source_url(tmp_path: Path):
         "private" in warning or "link-local" in warning
         for warning in result["warnings"]
     )
+
+
+def test_create_document_accepts_flat_front_matter_fields(tmp_path: Path):
+    service = KnowledgeAdminService(tmp_path)
+
+    created = service.create_document(
+        {
+            "domain": "tax",
+            "filename": "flat-guide.md",
+            "doc_title": "Flat Guide",
+            "source_url": "https://example.com/flat",
+            "language": "en",
+            "body": "# Flat Guide\n\n## Overview\nBody.",
+        }
+    )
+
+    assert created["doc_title"] == "Flat Guide"
+    assert created["metadata"]["doc_title"] == "Flat Guide"
 
 
 def test_preview_chunks_returns_chunk_ids_text_and_metadata(tmp_path: Path):
