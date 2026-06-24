@@ -7,4 +7,3 @@ function cleanBaseUrl(value: string | undefined): string {
 }
 
 export const API_BASE_URL = cleanBaseUrl(process.env.NEXT_PUBLIC_API_URL);
-export const ADMIN_TOKEN = process.env.ADMIN_TOKEN ?? "";

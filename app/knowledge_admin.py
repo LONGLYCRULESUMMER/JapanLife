@@ -105,7 +105,7 @@ class KnowledgeAdminService:
             self.render_markdown_document(data["metadata"], data["body"]),
             encoding="utf-8",
         )
-        return self._document_from_path(path)
+        return self._document_from_path(path) | {"needs_reindex": True}
 
     def soft_delete_document(self, doc_id: str) -> dict:
         path = self.resolve_doc_path(doc_id)

@@ -74,6 +74,7 @@ def test_admin_knowledge_crud_and_chunk_preview_api(client):
     )
     assert updated.status_code == 200
     assert "Updated body" in updated.json()["body"]
+    assert updated.json()["needs_reindex"] is True
 
     chunks = c.get("/admin/knowledge/docs/tax/sample-guide.md/chunks", headers=ADMIN_HEADERS)
     assert chunks.status_code == 200
